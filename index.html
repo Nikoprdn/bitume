@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BITUME — Paris, jour et nuit</title>
+<title>BITUME — Maintien de l'ordre</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;overflow:hidden;background:#0d0f1a;font-family:Inter,"Helvetica Neue",Arial,sans-serif;color:#fff;user-select:none}
@@ -19,31 +19,37 @@ canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:cros
 .clock{background:rgba(10,12,22,.92);padding:0 12px;display:flex;align-items:center;gap:10px;font-size:20px}
 .clock small{font-size:12px;color:#aab}
 #sky{font-size:17px;width:20px;text-align:center}
-#spd{font-size:12px;color:#ffd23f;min-width:44px}
-#poll{position:absolute;left:50%;transform:translateX(-50%);top:12px;width:430px;background:rgba(10,12,22,.92);padding:7px 10px 9px}
+#spd{font-size:12px;color:#ffd23f;min-width:50px}
+#phasebar{position:absolute;left:14px;top:58px;display:flex;gap:2px}
+#phasebar span{background:rgba(10,12,22,.85);color:#778;font-size:10.5px;font-weight:800;padding:5px 10px;letter-spacing:.5px}
+#phasebar span.on{background:#ffd23f;color:#111}
+#phasebar span.done{color:#ccd}
+#poll{position:absolute;left:50%;transform:translateX(-50%);top:12px;width:440px;background:rgba(10,12,22,.92);padding:7px 10px 9px}
 #poll .h{display:flex;justify-content:space-between;font-size:11px;font-weight:700;margin-bottom:5px}
 #poll .h .b{color:#6f95ff}#poll .h .r{color:#ff5a55}#poll .h .m{color:#ccd}
 .bar{height:9px;background:#2b4fd6;position:relative}
 .bar #fill{position:absolute;right:0;top:0;bottom:0;background:#d72a2a;width:50%;transition:width .3s}
 .bar .mid{position:absolute;left:50%;top:-3px;bottom:-3px;width:2px;background:#fff}
 #phase{font-size:10.5px;color:#ffd23f;margin-top:6px;font-weight:700;text-align:center;letter-spacing:.3px}
-#stats{position:absolute;right:14px;top:12px;background:rgba(10,12,22,.92);padding:8px 12px;width:380px}
+#stats{position:absolute;right:14px;top:12px;background:rgba(10,12,22,.92);padding:8px 12px;width:400px}
 #stats .t{font-size:11px;font-weight:700;margin-bottom:6px}
-#lmBoxes{display:flex;gap:4px;margin-bottom:7px}
-#lmBoxes span{flex:1;height:12px;background:#2b4fd6;font-size:8.5px;font-weight:800;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap}
-#lmBoxes span.c{background:#d72a2a}
-#lmBoxes span.x{background:repeating-linear-gradient(45deg,#2b4fd6 0 4px,#d72a2a 4px 8px)}
+#siteBoxes{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:7px}
+#siteBoxes span{height:16px;background:#2b4fd6;font-size:8.5px;font-weight:800;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap;position:relative;cursor:pointer}
+#siteBoxes span.mag{background:#3b5a9a}
+#siteBoxes span.warn{background:#e8590c}
+#siteBoxes span.lost{background:#111;color:#ff5a55;text-decoration:line-through}
 .dmg{font-size:10px;font-weight:800;color:#aab;display:flex;justify-content:space-between;margin-bottom:3px}
 .dmg b{color:#ff9a3a}
 .dbar{height:6px;background:#2a2f45;margin-bottom:8px}
 .dbar div{height:100%;background:linear-gradient(90deg,#ffb040,#ff4a20);width:0}
-#stats .g{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;font-size:9.5px;color:#aab;font-weight:700}
+#stats .g{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;font-size:9px;color:#aab;font-weight:700}
 #stats .g b{display:block;color:#fff;font-size:14px;margin-top:2px}
-#panel{position:absolute;left:14px;bottom:52px;width:700px;background:rgba(14,16,28,.95);border-top:3px solid #2b4fd6;padding:11px 14px 12px}
-#panel.crowd{border-top-color:#d72a2a}
-#panel.setup{border-top-color:#ffd23f}
-#selTitle{font-size:20px;font-weight:800;letter-spacing:.5px}
-#selSub{font-size:12px;color:#aab;margin:4px 0 10px;min-height:16px;line-height:1.4}
+#panel{position:absolute;left:14px;bottom:52px;width:720px;background:rgba(14,16,28,.95);border-top:3px solid #2b4fd6;padding:11px 14px 12px}
+#panel.prep{border-top-color:#ffd23f}
+#panel.setup{border-top-color:#ff9a3a}
+#selTitle{font-size:19px;font-weight:800;letter-spacing:.5px}
+#selSub{font-size:12px;color:#aab;margin:4px 0 10px;min-height:16px;line-height:1.45}
+#selSub b{color:#fff}
 #actions,#deploy{display:flex;flex-wrap:wrap;gap:5px}
 #deploy{margin-top:9px;padding-top:9px;border-top:1px solid #2a2f45}
 #deploy .lab{font-size:10.5px;font-weight:800;color:#aab;width:100%;margin-bottom:1px}
@@ -51,7 +57,6 @@ canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:cros
 #panel button kbd{background:#000;color:#fff;font-size:10px;padding:1px 5px;font-family:inherit}
 #panel button:hover{background:#2b3150}
 #panel button.on{background:#2b4fd6}
-#panel.crowd button.on{background:#d72a2a}
 #panel button.off{opacity:.36}
 #panel button.go{background:#ffd23f;color:#111;font-size:13px;padding:8px 14px}
 #panel button.go kbd{background:#111}
@@ -72,41 +77,38 @@ canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:cros
 #news .n.p b{background:#2b4fd6}
 #news .n.w b{background:#111}
 #news .n.s b{background:#e8590c}
+#news .n.v b{background:#7a3ad0}
 #news .n em{font-style:normal;font-weight:800;margin-right:6px}
-#help{position:absolute;right:14px;top:150px;font-size:11px;color:#99a;background:rgba(10,12,22,.8);padding:6px 9px;line-height:1.55}
+#help{position:absolute;right:14px;top:168px;font-size:11px;color:#99a;background:rgba(10,12,22,.8);padding:6px 9px;line-height:1.55}
 .ov{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(90deg,rgba(8,9,16,.93) 0,rgba(8,9,16,.55) 60%,rgba(8,9,16,.3))}
 .hide{display:none!important}
-#menu .box{position:absolute;left:40px;top:24px;bottom:24px;width:480px;background:rgba(12,13,22,.97);display:flex;flex-direction:column;overflow:hidden}
+#menu .box{position:absolute;left:40px;top:24px;bottom:24px;width:490px;background:rgba(12,13,22,.97);display:flex;flex-direction:column;overflow:hidden}
 #menu .hd{display:flex;align-items:stretch;height:44px}
 #menu .onair{display:flex;justify-content:space-between;background:#fff;color:#111;font-weight:800;font-size:13px;padding:7px 16px}
-#menu h1{font-size:38px;font-weight:900;letter-spacing:-1px;line-height:1;margin:14px 18px 6px}
+#menu h1{font-size:36px;font-weight:900;letter-spacing:-1px;line-height:1.02;margin:14px 18px 6px}
 #menu .sub{color:#ccd;margin:0 18px 10px;font-size:14px}
-.side{margin:0 18px 7px;padding:9px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;border:0;color:#fff;text-align:left;width:calc(100% - 36px)}
+.side{margin:0 18px 7px;padding:11px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;border:0;color:#fff;text-align:left;width:calc(100% - 36px);background:#2b4fd6}
 .side b{display:block;font-size:22px;font-weight:900}
 .side span{font-size:12.5px;opacity:.9}
 .side i{font-style:normal;font-size:28px}
-.side.cr{background:#d72a2a}.side.po{background:#2b4fd6}
 .side:hover{filter:brightness(1.12)}
 #menu .lbl{font-size:11px;font-weight:700;color:#aab;margin:9px 18px 5px}
-#scens{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 18px}
-#scens button{background:#1d2133;border:0;color:#fff;text-align:left;padding:7px 10px;cursor:pointer;font:inherit}
-#scens button b{display:block;font-size:13px;font-weight:800}
-#scens button span{font-size:11px;color:#aab;font-family:Menlo,monospace}
-#scens button.on{background:#ffd23f;color:#111}#scens button.on span{color:#333}
 .row{display:flex;gap:6px;margin:0 18px}
-.row button{flex:1;background:#1d2133;border:0;color:#fff;font:600 13px Menlo,monospace;padding:7px 0;cursor:pointer}
-.row button.on{background:#ffd23f;color:#111}
+.row button{flex:1;background:#1d2133;border:0;color:#fff;font:600 12.5px Inter,Arial;padding:7px 4px;cursor:pointer;text-align:center}
+.row button small{display:block;font:500 10.5px Menlo,monospace;color:#aab}
+.row button.on{background:#ffd23f;color:#111}.row button.on small{color:#333}
 #rules{margin:10px 18px;font-size:12px;color:#c8cad8;line-height:1.55;overflow:auto;flex:1}
 #rules h3{font-size:11.5px;color:#fff;margin:10px 0 3px;letter-spacing:.5px}
 #rules kbd{background:#2a2f45;padding:0 5px;font-size:11px;color:#fff}
 #rules .u{display:flex;align-items:center;gap:7px}
 #rules .u i{width:12px;height:12px;border-radius:50%;display:inline-block;flex:none;border:2px solid #000}
-#end .card{background:rgba(12,13,22,.97);padding:28px 34px;width:560px;border-top:5px solid #ffd23f}
+#end .card{background:rgba(12,13,22,.97);padding:26px 32px;width:620px;border-top:5px solid #ffd23f;max-height:94vh;overflow:auto}
 #end h2{font-size:14px;color:#aab;font-weight:700;letter-spacing:1px}
-#end h1{font-size:40px;font-weight:900;margin:8px 0 6px}
-#end p{color:#ccd;font-size:14px;margin-bottom:16px;line-height:1.5}
-#end .g{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;font-size:11px;color:#aab;font-weight:700}
-#end .g b{display:block;font-size:22px;color:#fff}
+#end h1{font-size:36px;font-weight:900;margin:8px 0 6px}
+#end p{color:#ccd;font-size:14px;margin-bottom:14px;line-height:1.5}
+#end .grade{font-size:64px;font-weight:900;float:right;line-height:1;margin-left:16px}
+#end .g{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;font-size:11px;color:#aab;font-weight:700;clear:both}
+#end .g b{display:block;font-size:20px;color:#fff}
 #end button{background:#ffd23f;border:0;color:#111;font:800 15px Inter,Arial;padding:11px 20px;cursor:pointer;margin-right:8px}
 #end button.s{background:#1d2133;color:#fff}
 #pauseTag{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);font-size:42px;font-weight:900;background:rgba(0,0,0,.6);padding:10px 26px;pointer-events:none}
@@ -119,77 +121,79 @@ canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:cros
   <div id="top-left">
     <div class="brand">BITUME</div>
     <div class="live"><i></i>LIVE</div>
-    <div class="clock mono"><span id="sky">☀</span><span id="clock">22:00</span><small id="endAt">fin 06:00</small><span id="spd">×1</span></div>
+    <div class="clock mono"><span id="sky">☀</span><span id="clock">11:00</span><small id="endAt">fin 20:00</small><span id="spd">×1</span></div>
   </div>
+  <div id="phasebar"><span id="ph-prep">1 · PRÉPARATION</span><span id="ph-setup">2 · MISE EN PLACE</span><span id="ph-action">3 · ACTION</span></div>
   <div id="poll">
-    <div class="h"><span class="b">POLICE <span id="pPol">50</span> %</span><span class="m">SONDAGE · OPINION PUBLIQUE</span><span class="r">FOULE <span id="pCro">50</span> %</span></div>
+    <div class="h"><span class="b">SOUTIEN POLICE <span id="pPol">50</span> %</span><span class="m">SONDAGE · OPINION</span><span class="r">MANIFESTANTS <span id="pCro">50</span> %</span></div>
     <div class="bar"><div id="fill"></div><div class="mid"></div></div>
     <div id="phase"></div>
   </div>
   <div id="stats">
-    <div class="t">LIEUX SENSIBLES · FOULE <span id="lmC">0</span> / 4 <span style="color:#aab;font-weight:500">— la foule gagne à 3</span></div>
-    <div id="lmBoxes"></div>
-    <div class="dmg"><span>DÉGÂTS</span><span><b id="dmgV">0</b> / <span id="dmgM">3 M€</span></span></div>
+    <div class="t">SITES SENSIBLES <span style="color:#aab;font-weight:500">— une intrusion dans une institution = défaite</span></div>
+    <div id="siteBoxes"></div>
+    <div class="dmg"><span>DÉGÂTS</span><span><b id="dmgV">0</b> / <span id="dmgM">4 M€</span></span></div>
     <div class="dbar"><div id="dmgBar"></div></div>
     <div class="g mono">
-      <div>MANIFS<b id="sCro">0</b></div><div>POLICE<b id="sPol">0</b></div><div>RÉSERVE<b id="sRes">0</b></div><div>ARRESTS<b id="sArr">0</b></div><div>BLESSÉS<b id="sWnd">0</b></div><div>FEUX<b id="sFire">0</b></div>
+      <div>MANIFS<b id="sCro">0</b></div><div>VIOLENTS<b id="sHos">0</b></div><div>POLICE<b id="sPol">0</b></div><div>ARRESTS<b id="sArr">0</b></div><div>BLESSÉS<b id="sWnd">0</b></div><div>CIVILS<b id="sCiv">0</b></div>
     </div>
   </div>
-  <div id="help">Clic gauche / glisser : sélectionner · Clic droit : déplacer<br>ZQSD / flèches : caméra · molette : zoom<br>Espace : pause · + : vitesse · Tab : groupe suivant<br>Clic sur une info du bandeau : y aller</div>
+  <div id="help">Clic gauche / glisser : sélectionner · Clic droit : déplacer<br>ZQSD / flèches : caméra · molette : zoom<br>Espace : pause · + : vitesse · Tab : unité suivante<br>Clic sur une info du bandeau : y aller</div>
   <div id="panel">
-    <div id="selTitle">PERSONNE N'EST SÉLECTIONNÉ</div>
+    <div id="selTitle"></div>
     <div id="selSub"></div>
     <div id="actions"></div>
-    <div id="deploy" class="hide"></div>
+    <div id="deploy"></div>
   </div>
-  <div id="mini"><div class="mh">CAMÉRA HÉLICOPTÈRE <span>PARIS</span></div><canvas id="mm"></canvas></div>
+  <div id="mini"><div class="mh">CAMÉRA HÉLICOPTÈRE <span>SECTEUR</span></div><canvas id="mm"></canvas></div>
   <div id="ticker"><div class="flash">FLASH</div><div id="news"></div></div>
 </div>
 
 <div id="menu" class="ov">
   <div class="box">
     <div class="hd"><div class="brand">BITUME</div><div class="live"><i></i>LIVE</div><div class="clock mono" style="font-size:14px" id="menuClock">PARIS</div></div>
-    <div class="onair" style="margin-top:12px"><span>EN DIRECT</span><span class="mono">PGM 01</span></div>
-    <h1>PARIS,<br>JOUR ET NUIT</h1>
-    <div class="sub">Un cortège déclaré, des casseurs, et vous au milieu</div>
-    <button class="side po" data-side="police"><div><b>LA POLICE</b><span>Placez vos forces, encadrez le parcours, protégez Paris</span></div><i>›</i></button>
-    <button class="side cr" data-side="crowd"><div><b>LA FOULE</b><span>Le cortège, les groupes autonomes, la rue</span></div><i>›</i></button>
+    <div class="onair" style="margin-top:12px"><span>SALLE DE COMMANDEMENT</span><span class="mono">DOPC</span></div>
+    <h1>MAINTIEN<br>DE L'ORDRE</h1>
+    <div class="sub">Une manifestation déclarée. Toutes les forces du secteur sous vos ordres.</div>
+    <button class="side" id="startBtn"><div><b>PRENDRE LE COMMANDEMENT</b><span>Préparation · mise en place · action</span></div><i>›</i></button>
     <div class="lbl">SCÉNARIO</div>
-    <div id="scens"></div>
+    <div class="row" id="scens"></div>
     <div class="lbl">DIFFICULTÉ</div>
-    <div class="row" id="diffs"><button data-k="facile" class="on">FACILE</button><button data-k="normal">NORMAL</button><button data-k="difficile">DIFFICILE</button></div>
-    <div class="lbl">DURÉE DE LA PARTIE (TEMPS RÉEL)</div>
-    <div class="row" id="durs"><button data-d="8">08:00</button><button data-d="15" class="on">15:00</button><button data-d="30">30:00</button></div>
+    <div class="row" id="diffs"><button data-k="facile" class="on">FACILE<small>plus de forces</small></button><button data-k="normal">NORMAL</button><button data-k="difficile">DIFFICILE<small>moins de forces</small></button></div>
+    <div class="lbl">DURÉE DE LA PHASE D'ACTION (TEMPS RÉEL)</div>
+    <div class="row" id="durs"><button data-d="10">10 min</button><button data-d="20" class="on">20 min</button><button data-d="35">35 min</button></div>
     <div id="rules">
-      <h3>LE PRINCIPE</h3>
-      Un cortège déclaré défile de République à Bastille puis place d'Italie (en jaune sur la carte). Le long du parcours, des groupes se détachent pour piller, incendier ou attaquer les 4 lieux sensibles : Opéra, Louvre, Hôtel de Ville et Panthéon.
-      <b>La foule gagne</b> si elle tient 3 des 4 lieux sensibles à la fin, ou si les dégâts atteignent le seuil. Sinon, <b>la police gagne</b>.
-      <h3>PRÉPARATION (POLICE)</h3>
-      Avant le départ, l'horloge est arrêtée : placez vos unités avec votre budget en cliquant sur un type puis sur la carte. Clic droit pour déplacer une unité sélectionnée, <kbd>Suppr</kbd> pour la retirer, ou « Placement auto ». Puis lancez la journée.
-      <h3>INCIDENTS ET SECOURS</h3>
-      Les casseurs pillent les commerces et brûlent les voitures ; le feu se propage. Les pompiers et le SAMU partent seuls des casernes et des hôpitaux, mais la foule et les barricades les ralentissent : dégagez-leur la route. Un blessé qui attend trop longtemps retourne l'opinion contre le camp qui l'a laissé.
-      <h3>LE JOUR ET LA NUIT</h3>
-      Le jour, il y a des passants et des caméras : chaque violence pèse plus lourd dans l'opinion. La nuit, il y a moins de monde mais plus de casseurs, et les interpellations sont plus dures hors du projecteur de l'hélicoptère.
-      <h3>LES UNITÉS DE POLICE</h3>
+      <h3>1 · LA PRÉPARATION</h3>
+      L'horloge est arrêtée. Lisez la note du renseignement, puis répartissez les forces du secteur sur la carte : garde des sites sensibles, encadrement du parcours, réserve, interpellation. Choisissez les points de bouclage (ronds jaunes) que la Police secours et la police municipale fermeront à la circulation.
+      <h3>2 · LA MISE EN PLACE (11:00 → 14:00)</h3>
+      Les unités partent réellement de leurs casernes et commissariats et traversent la ville. La Police secours balise le parcours et ferme les rues. Pendant ce temps, les manifestants se rassemblent à République. Une rue non bouclée laisse entrer des voitures dans le cortège.
+      <h3>3 · L'ACTION</h3>
+      Le cortège part à 14:00 vers Bastille puis la place d'Italie. Les black blocs (en noir) marchent en tête et se détachent pour casser, piller, incendier ou viser les sites sensibles. Des passants peuvent se joindre aux violences. Les manifestants pacifiques sont multicolores.
+      <h3>LE MONDE OUVERT</h3>
+      Des passants, des clients, des automobilistes circulent partout. Toute mauvaise interaction pèse sur l'opinion : un passant gazé, touché par un tir de LBD, bousculé par une charge ou interpellé à tort retourne l'opinion contre la police. Un passant blessé par un projectile ou agressé par des casseurs la retourne contre les manifestants.
+      <h3>LES SITES SENSIBLES</h3>
+      Ministère de l'Intérieur, Hôtel de Ville et Assemblée nationale : une intrusion fait perdre la partie. Galeries Lafayette, Forum des Halles et Bon Marché : un pillage coûte très cher.
+      <h3>LES FORCES DU SECTEUR</h3>
       <div class="u"><i style="background:#1a1d28;border-color:#ffd23f"></i>CRS (20) : bandes jaunes, grand bouclier, Cougar</div>
       <div class="u"><i style="background:#2f5bd0"></i>Gendarmes mobiles (20) : casque bleu, grand bouclier</div>
-      <div class="u"><i style="background:#1a1d28;border-color:#2f6bff"></i>Cie d'intervention (16) : bande bleue, bouclier carré, LBD</div>
+      <div class="u"><i style="background:#1a1d28;border-color:#2f6bff"></i>Compagnie d'intervention (16) : bande bleue, bouclier carré, LBD</div>
       <div class="u"><i style="background:#050507"></i>CSI (12) : casque noir, bouclier carré, LBD</div>
-      <div class="u"><i style="background:#5a5a64;border-color:#ff9a2a"></i>BAC (6) : tenue civile, casque de ski, interpellations</div>
+      <div class="u"><i style="background:#5a5a64;border-color:#ff9a2a"></i>BAC (6) : tenue civile, interpellations</div>
       <div class="u"><i style="background:#dfe3ea"></i>BRAV-M (10) : casque de moto, binômes à moto</div>
-      <div class="u"><i style="background:#22305a;border-color:#8fd0ff"></i>Police municipale (10) : bande bleu clair</div>
-      <div class="u"><i style="background:#8a5a2a"></i>Unité canine (4) : maîtres-chiens</div>
-      <h3>POLICE</h3>
-      <kbd>G</kbd> lacrymo · <kbd>L</kbd> LBD · <kbd>K</kbd> assourdissante · <kbd>V</kbd> fumigène · <kbd>C</kbd> charge · <kbd>H</kbd> tenir · <kbd>U</kbd> débarquer · <kbd>Y</kbd> embarquer · <kbd>N</kbd> barrière · <kbd>J</kbd> jet d'eau · renforts <kbd>1</kbd>–<kbd>0</kbd>
-      <h3>FOULE</h3>
-      <kbd>T</kbd> paisible / offensif · <kbd>H</kbd> sit-in · <kbd>B</kbd> barricade · <kbd>F</kbd> appeler des amis · <kbd>E</kbd> détacher un groupe · <kbd>P</kbd> piller · <kbd>I</kbd> incendier · <kbd>R</kbd> reprendre le parcours
+      <div class="u"><i style="background:#1b2440;border-color:#fff"></i>Police secours (3) : casquette, ni bouclier ni casque, tonfa et gazeuse — balisage et bouclage</div>
+      <div class="u"><i style="background:#22305a;border-color:#8fd0ff"></i>Police municipale (10) : bande bleu clair, bouclage</div>
+      <div class="u"><i style="background:#8a5a2a"></i>Unité canine (4)</div>
+      Et : canon à eau, VBRG Centaure, hélicoptère de la gendarmerie.
+      <h3>COMMANDES</h3>
+      <kbd>G</kbd> lacrymo · <kbd>L</kbd> LBD · <kbd>K</kbd> assourdissante · <kbd>V</kbd> fumigène · <kbd>C</kbd> charge · <kbd>H</kbd> tenir · <kbd>U</kbd> débarquer · <kbd>Y</kbd> embarquer · <kbd>N</kbd> barrière · <kbd>J</kbd> jet d'eau · <kbd>X</kbd> tout · <kbd>Tab</kbd> unité suivante
     </div>
   </div>
 </div>
 
 <div id="end" class="ov hide">
   <div class="card">
-    <h2 id="endKicker">06:00</h2>
+    <div class="grade" id="endGrade"></div>
+    <h2 id="endKicker">BILAN</h2>
     <h1 id="endTitle">—</h1>
     <p id="endText"></p>
     <div class="g mono" id="endStats"></div>
@@ -201,31 +205,33 @@ canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:cros
 <script>
 'use strict';
 /* ================= CARTE ================= */
-const S=70,B=230,P=300,COLS=8,ROWS=5,W=COLS*P+S,H=ROWS*P+S;
-const RIVER_ROW=3,BRIDGES=[1,3,5,7];
+const S=70,B=230,P=300,COLS=10,ROWS=7,W=COLS*P+S,H=ROWS*P+S;
+const RIVER_ROW=4,BRIDGES=[1,4,8];
 const WY0=RIVER_ROW*P+S+18,WY1=RIVER_ROW*P+S+B-18;
-const POL=0,CRO=1,LR=100;
-const LANDMARK_DEFS=[
-  {name:'Opéra Garnier',short:'OPÉRA',c:2,r:0,kind:'opera'},
-  {name:'République',c:6,r:0,kind:'column',route:true},
-  {name:'Louvre',short:'LOUVRE',c:1,r:2,kind:'pyramid'},
-  {name:'Hôtel de Ville',short:'HÔTEL DE V.',c:4,r:2,kind:'hall'},
-  {name:'Bastille',c:6,r:2,kind:'column',route:true},
-  {name:'Panthéon',short:'PANTHÉON',c:3,r:4,kind:'dome'},
-  {name:"Place d'Italie",c:6,r:4,kind:'fountain',route:true},
+const POL=0,CRO=1;
+const X=i=>i*P+S/2;
+const blockCenter=(c,r)=>({x:S+c*P+B/2,y:S+r*P+B/2});
+const PLAZAS=[{name:'République',c:7,r:1,kind:'column',tag:'DÉPART'},{name:'Bastille',c:7,r:3,kind:'column',tag:'PARCOURS'},{name:"Place d'Italie",c:7,r:5,kind:'fountain',tag:'ARRIVÉE'}];
+const SITES=[
+  {name:"Ministère de l'Intérieur",short:'INTÉRIEUR',c:2,r:1,type:'inst'},
+  {name:'Galeries Lafayette',short:'GALERIES',c:3,r:0,type:'mag'},
+  {name:'Forum des Halles',short:'HALLES',c:4,r:2,type:'mag'},
+  {name:'Hôtel de Ville',short:'HÔTEL DE VILLE',c:5,r:3,type:'inst'},
+  {name:'Assemblée nationale',short:'ASSEMBLÉE',c:1,r:5,type:'inst'},
+  {name:'Le Bon Marché',short:'BON MARCHÉ',c:3,r:6,type:'mag'},
 ];
-const PARKS=[[0,1],[5,4],[4,0],[0,4]];
+const PARKS=[[0,2],[5,0],[9,6],[5,6],[9,0]];
 const blockType=[];
 for(let r=0;r<ROWS;r++){blockType.push([]);for(let c=0;c<COLS;c++)blockType[r].push(r===RIVER_ROW?'river':'b')}
-LANDMARK_DEFS.forEach(l=>blockType[l.r][l.c]='plaza');
+PLAZAS.forEach(l=>blockType[l.r][l.c]='plaza');
+SITES.forEach(l=>blockType[l.r][l.c]='site');
 PARKS.forEach(([c,r])=>blockType[r][c]='park');
-const X=i=>i*P+S/2;
-const lmCenter=l=>({x:S+l.c*P+B/2,y:S+l.r*P+B/2});
-const CROWD_SPAWNS=[[8,0],[8,1],[8,2],[8,4],[8,5],[5,0],[3,5],[7,5]].map(([i,j])=>({x:X(i)+(i===8?20:0),y:X(j)+(j===0?-20:j===5?20:0)}));
-const SPAWN_NAMES=['Belleville','Ménilmontant','Montreuil','Ivry','Saint-Denis','Pantin','Gentilly','Vitry'];
-const POLICE_STATIONS=[{x:X(0)-20,y:X(1)},{x:X(0)-20,y:X(4)}];
-const HOSPITALS=[{name:'Lariboisière',x:X(4),y:X(0)},{name:'Hôtel-Dieu',x:X(3),y:X(3)},{name:'Pitié-Salpêtrière',x:X(7),y:X(5)}];
-const CASERNES=[{name:'Caserne Champerret',x:X(1),y:X(1)},{name:'Caserne Sévigné',x:X(5),y:X(2)},{name:'Caserne Poissy',x:X(2),y:X(5)}];
+const BASES={crs:{name:'Caserne CRS',x:X(0)-18,y:X(2),ic:'CRS'},gn:{name:'Caserne de gendarmerie',x:X(0)-18,y:X(6),ic:'GN'},
+  central:{name:'Commissariat central',x:X(3),y:X(3),ic:'PN'},est:{name:'Commissariat 11e',x:X(9),y:X(1),ic:'PN'},sud:{name:'Commissariat 13e',x:X(6),y:X(6),ic:'PN'},nord:{name:'Commissariat 10e',x:X(6),y:X(0),ic:'PN'}};
+const LOCAL_BASES=['est','sud','nord','central'];
+const HOSPITALS=[{name:'Lariboisière',x:X(5),y:X(0)},{name:'Hôtel-Dieu',x:X(4),y:X(4)},{name:'Pitié-Salpêtrière',x:X(8),y:X(6)},{name:'Saint-Antoine',x:X(9),y:X(3)}];
+const CASERNES=[{name:'Pompiers Champerret',x:X(1),y:X(1)},{name:'Pompiers Sévigné',x:X(6),y:X(3)},{name:'Pompiers Port-Royal',x:X(4),y:X(6)}];
+const EDGE_SPAWNS=[];for(let i=0;i<=COLS;i++){EDGE_SPAWNS.push({x:X(i),y:12},{x:X(i),y:H-12})}for(let j=0;j<=ROWS;j++){EDGE_SPAWNS.push({x:12,y:X(j)},{x:W-12,y:X(j)})}
 
 function isSolid(x,y){
   if(x<3||y<3||x>W-3||y>H-3)return true;
@@ -234,20 +240,21 @@ function isSolid(x,y){
   if(c<0||r<0||c>=COLS||r>=ROWS)return false;
   const lx=x-S-c*P,ly=y-S-r*P;
   if(lx>=B||ly>=B)return false;
-  return blockType[r][c]==='b';
+  const t=blockType[r][c];return t==='b'||t==='site';
 }
 
-/* ================= UNITÉS ================= */
+/* ================= FORCES ================= */
 const SHIELD={grand:{dmg:.35,spd:.82},carre:{dmg:.65,spd:1},none:{dmg:1,spd:1.08}};
 const UT={
-  CRS:  {name:'CRS',full:'CRS',body:'#1d2335',helm:'#1a1d28',stripe:'#ffd23f',shield:'grand',speed:1,hp:110,arrest:1,n:20,cost:10,veh:'fourgonCRS',weap:['cougar','lacry','fumi','gazeuse','assour','tonfa']},
-  GM:   {name:'GM',full:'Gendarmes mobiles',body:'#141a2c',helm:'#2f5bd0',stripe:null,shield:'grand',speed:1,hp:110,arrest:1,n:20,cost:10,veh:'fourgonGN',weap:['cougar','lacry','fumi','assour','tonfa']},
-  CI:   {name:'CI',full:"Compagnie d'intervention",body:'#1b2440',helm:'#1a1d28',stripe:'#2f6bff',shield:'carre',speed:1,hp:95,arrest:1.15,n:16,cost:8,veh:'fourgonPN',weap:['lbd','gazeuse','assour','matraque']},
-  CSI:  {name:'CSI',full:"Cie de sécurisation et d'intervention",body:'#1b2440',helm:'#050507',stripe:null,shield:'carre',speed:1,hp:95,arrest:1.2,n:12,cost:6,veh:'fourgonnette',weap:['lbd','gazeuse','lacry','matraque']},
-  BAC:  {name:'BAC',full:'Brigade anti-criminalité',body:'civil',helm:'ski',stripe:null,shield:'none',speed:1.12,hp:80,arrest:1.8,n:6,cost:4,veh:'banalise',weap:['lbd','gazeuse','matraque']},
-  BRAVM:{name:'BRAV-M',full:'BRAV-M (motos)',body:'#1b2440',helm:'#dfe3ea',stripe:null,shield:'none',speed:1.55,hp:85,arrest:1.4,n:10,cost:6,veh:'moto',weap:['lbd','gazeuse','matraque']},
-  PM:   {name:'PM',full:'Police municipale',body:'#22305a',helm:'#22305a',stripe:'#8fd0ff',shield:'none',speed:1,hp:80,arrest:.7,n:10,cost:5,veh:'fourgonnette',weap:['gazeuse','tonfa']},
-  K9:   {name:'CANINE',full:'Unité canine',body:'#1b2440',helm:'#1a1d28',stripe:null,shield:'none',speed:1.05,hp:90,arrest:2.1,n:4,cost:4,veh:'fourgonnette',weap:['gazeuse','chien','matraque']},
+  CRS:  {name:'CRS',full:'CRS',body:'#1d2335',helm:'#1a1d28',stripe:'#ffd23f',shield:'grand',speed:1,hp:110,arrest:1,n:20,veh:'fourgonCRS',base:'crs',weap:['cougar','lacry','fumi','gazeuse','assour','tonfa']},
+  GM:   {name:'GM',full:'Gendarmes mobiles',body:'#141a2c',helm:'#2f5bd0',stripe:null,shield:'grand',speed:1,hp:110,arrest:1,n:20,veh:'fourgonGN',base:'gn',weap:['cougar','lacry','fumi','assour','tonfa']},
+  CI:   {name:'CI',full:"Compagnie d'intervention",body:'#1b2440',helm:'#1a1d28',stripe:'#2f6bff',shield:'carre',speed:1,hp:95,arrest:1.15,n:16,veh:'fourgonPN',base:'central',weap:['lbd','gazeuse','assour','matraque']},
+  CSI:  {name:'CSI',full:"Cie de sécurisation et d'intervention",body:'#1b2440',helm:'#050507',stripe:null,shield:'carre',speed:1,hp:95,arrest:1.2,n:12,veh:'fourgonnette',base:'central',weap:['lbd','gazeuse','lacry','matraque']},
+  BAC:  {name:'BAC',full:'Brigade anti-criminalité',body:'civil',helm:'ski',stripe:null,shield:'none',speed:1.12,hp:80,arrest:1.8,n:6,veh:'banalise',base:'central',weap:['lbd','gazeuse','matraque']},
+  BRAVM:{name:'BRAV-M',full:'BRAV-M (motos)',body:'#1b2440',helm:'#dfe3ea',stripe:null,shield:'none',speed:1.55,hp:85,arrest:1.4,n:10,veh:null,base:'central',weap:['lbd','gazeuse','matraque']},
+  PS:   {name:'PS',full:'Police secours',body:'#1b2440',helm:'cap',stripe:null,shield:'none',speed:1.05,hp:65,arrest:.55,n:3,veh:'voiturePS',base:'local',weap:['tonfa','gazeuse'],bouclage:true},
+  PM:   {name:'PM',full:'Police municipale',body:'#22305a',helm:'#22305a',stripe:'#8fd0ff',shield:'none',speed:1,hp:75,arrest:.6,n:10,veh:'fourgonnette',base:'local',weap:['gazeuse','tonfa'],bouclage:true},
+  K9:   {name:'CANINE',full:'Unité canine',body:'#1b2440',helm:'#1a1d28',stripe:null,shield:'none',speed:1.05,hp:90,arrest:2.1,n:4,veh:'fourgonnette',base:'central',weap:['gazeuse','chien','matraque']},
 };
 const WNAME={cougar:'Cougar',lacry:'lacrymo',fumi:'fumigène',gazeuse:'gazeuse',assour:'assourdissante',tonfa:'tonfa',matraque:'matraque télescopique',lbd:'LBD',chien:'chien'};
 const VT={
@@ -255,27 +262,26 @@ const VT={
   fourgonGN:{name:'Fourgon Gendarmerie',len:30,wid:13,body:'#22304f',s1:'#dfe3ea',s2:null,txt:'GENDARMERIE',speed:72,hp:320,cap:20,gyro:'#3a7aff'},
   fourgonPN:{name:'Fourgon Police nationale',len:29,wid:13,body:'#eef0f5',s1:'#2b4fd6',s2:'#d72a2a',txt:'POLICE',speed:72,hp:300,cap:16,gyro:'#3a7aff'},
   fourgonnette:{name:'Fourgonnette PN',len:23,wid:11,body:'#eef0f5',s1:'#2b4fd6',s2:'#d72a2a',txt:'POLICE',speed:82,hp:220,cap:12,gyro:'#3a7aff'},
+  voiturePS:{name:'Voiture Police secours',len:20,wid:10,body:'#eef0f5',s1:'#2b4fd6',s2:'#d72a2a',txt:'POLICE',speed:100,hp:160,cap:3,gyro:'#3a7aff'},
   banalise:{name:'Véhicule banalisé',len:20,wid:10,body:'#3b4049',s1:null,s2:null,txt:'',speed:100,hp:160,cap:6,gyro:'#3a7aff'},
-  eau:{name:'Canon à eau CRS',len:34,wid:14,body:'#eef0f5',s1:'#2b4fd6',s2:null,txt:'CRS',speed:46,hp:650,cap:0,cost:8,gyro:'#3a7aff'},
-  vbrg:{name:'VBRG Centaure',len:30,wid:15,body:'#3a4a3a',s1:null,s2:null,txt:'GENDARMERIE',speed:56,hp:1000,cap:0,cost:10,gyro:'#3a7aff'},
-  helico:{name:'Hélicoptère Gendarmerie',len:30,wid:10,body:'#24365e',air:true,speed:115,hp:99999,cap:0,cost:12},
+  eau:{name:'Canon à eau CRS',len:34,wid:14,body:'#eef0f5',s1:'#2b4fd6',s2:null,txt:'CRS',speed:46,hp:650,cap:0,gyro:'#3a7aff',base:'crs'},
+  vbrg:{name:'VBRG Centaure',len:30,wid:15,body:'#3a4a3a',s1:null,s2:null,txt:'GENDARMERIE',speed:56,hp:1000,cap:0,gyro:'#3a7aff',base:'gn'},
+  helico:{name:'Hélicoptère Gendarmerie',len:30,wid:10,body:'#24365e',air:true,speed:115,hp:99999,cap:0,base:'crs'},
 };
-const DEPLOY=[['CRS','1'],['GM','2'],['CI','3'],['CSI','4'],['BAC','5'],['BRAVM','6'],['PM','7'],['K9','8'],['eau','9'],['vbrg','0'],['helico','-']];
+const ROSTER_ORDER=['CRS','GM','CI','CSI','BAC','BRAVM','PS','PM','K9','eau','vbrg','helico'];
 const SCEN={
-  jour:{name:'MANIF DE JOUR',hours:'13:00 → 20:00',start:13*60,span:7*60,groups:10,size:30,op:55,march:true},
-  jn:{name:'DU JOUR À LA NUIT',hours:'14:00 → 06:00',start:14*60,span:16*60,groups:10,size:28,op:52,march:true},
-  nuit:{name:'LA NUIT',hours:'22:00 → 06:00',start:22*60,span:8*60,groups:9,size:26,op:50,march:false},
-  h24:{name:'24 HEURES',hours:'12:00 → 12:00',start:12*60,span:24*60,groups:10,size:28,op:52,march:true},
+  jour:{name:'MANIF DE JOUR',hours:'11:00 → 20:00',span:6*60},
+  jn:{name:'JOUR ET NUIT',hours:'11:00 → 02:00',span:12*60},
 };
 const DIFF={
-  facile:{crowd:.75,cass:.6,budget:150,reserve:50,dmg:4e6,agg:.7},
-  normal:{crowd:1,cass:1,budget:120,reserve:40,dmg:3e6,agg:1},
-  difficile:{crowd:1.25,cass:1.4,budget:95,reserve:30,dmg:2.2e6,agg:1.25},
+  facile:{roster:{CRS:4,GM:3,CI:2,CSI:2,BAC:3,BRAVM:2,PS:8,PM:3,K9:1,eau:1,vbrg:1,helico:1},crowd:[260,320],cass:[3,4],cassSize:12,opp:.5,dmg:5e6,reinf:3},
+  normal:{roster:{CRS:3,GM:2,CI:2,CSI:1,BAC:2,BRAVM:1,PS:6,PM:2,K9:1,eau:1,vbrg:1,helico:1},crowd:[320,400],cass:[4,5],cassSize:14,opp:1,dmg:4e6,reinf:2},
+  difficile:{roster:{CRS:2,GM:2,CI:1,CSI:1,BAC:2,BRAVM:1,PS:5,PM:2,K9:1,eau:1,vbrg:0,helico:1},crowd:[380,460],cass:[5,7],cassSize:16,opp:1.5,dmg:3e6,reinf:1},
 };
-const SHOP_TYPES=[['Banque','#2b6cb0'],['Supérette','#2f9e44'],['Boutique téléphonie','#e8590c'],['Fast-food','#f59f00'],['Agence immobilière','#7048e8'],['Bijouterie','#c2255c'],['Magasin de sport','#1098ad'],['Pharmacie','#37b24d']];
-const COST={carBurnt:15000,carSaved:6000,shopLooted:40000,shopBurnt:200000,shopSaved:60000,policeVeh:250000,bar:3000};
+const SHOP_TYPES=[['Banque','#2b6cb0'],['Supérette','#2f9e44'],['Boutique téléphonie','#e8590c'],['Fast-food','#f59f00'],['Agence immobilière','#7048e8'],['Bijouterie','#c2255c'],['Magasin de sport','#1098ad'],['Pharmacie','#37b24d'],['Café','#8a5a2a']];
+const COST={carBurnt:15000,carSaved:6000,shopLooted:40000,shopBurnt:200000,shopSaved:60000,policeVeh:250000,bar:3000,magasin:1500000};
 function darkness(h){if(h>=20.5||h<6)return 1;if(h>=18.5)return(h-18.5)/2;if(h<8)return 1-(h-6)/2;return 0}
-function crowdFlow(h){if(h>=12&&h<18.5)return 1.4;if(h>=18.5&&h<22)return 1.1;if(h>=22||h<1)return .9;if(h<6)return .5;if(h<9)return .55;return .9}
+function crowdFlow(h){if(h>=12&&h<18.5)return 1.3;if(h>=18.5&&h<22)return 1;if(h>=22||h<1)return .7;return .4}
 
 /* ================= NAVIGATION ================= */
 const CELL=10,GW=Math.ceil(W/CELL),GH=Math.ceil(H/CELL),NC=GW*GH;
@@ -296,7 +302,7 @@ function astar(sx,sy,tx,ty){
   const heur=k=>{const dx=Math.abs(k%GW-ti),dy=Math.abs(((k/GW)|0)-tj);return(dx+dy)-.586*Math.min(dx,dy)};
   stamp[s]=cur;gS[s]=0;fS[s]=heur(s);came[s]=-1;hpush(h,s);let found=false,iter=0;
   while(h.length){const k=hpop(h);if(closedS[k]===cur)continue;closedS[k]=cur;if(k===t){found=true;break}
-    if(++iter>40000)break;const ki=k%GW,kj=(k/GW)|0;
+    if(++iter>70000)break;const ki=k%GW,kj=(k/GW)|0;
     for(const[di,dj,cst]of NB){const i=ki+di,j=kj+dj;if(i<0||j<0||i>=GW||j>=GH)continue;const n=j*GW+i;if(!walk[n]||closedS[n]===cur)continue;
       if(di&&dj&&(!walk[kj*GW+i]||!walk[j*GW+ki]))continue;
       const g=gS[k]+cst;if(stamp[n]!==cur||g<gS[n]){stamp[n]=cur;gS[n]=g;fS[n]=g+heur(n);came[n]=k;hpush(h,n)}}}
@@ -309,14 +315,6 @@ function astar(sx,sy,tx,ty){
 function los(x0,y0,x1,y1){const d=Math.hypot(x1-x0,y1-y0),n=Math.ceil(d/5);for(let k=1;k<n;k++){const t=k/n;if(!walk[cellIdx(x0+(x1-x0)*t,y0+(y1-y0)*t)])return false}return true}
 function findFree(x,y){if(!isSolid(x,y)&&walk[cellIdx(x,y)])return{x,y};const c=nearestWalk(cellIdx(x,y));return{x:(c%GW)*CELL+5,y:((c/GW)|0)*CELL+5}}
 
-/* ================= PARCOURS DÉCLARÉ ================= */
-const ROUTE=(()=>{const pts=[lmCenter(LANDMARK_DEFS[1]),lmCenter(LANDMARK_DEFS[4]),lmCenter(LANDMARK_DEFS[6])];let out=[pts[0]];
-  for(let i=0;i<pts.length-1;i++){const p=astar(pts[i].x,pts[i].y,pts[i+1].x,pts[i+1].y)||[pts[i+1]];out=out.concat(p)}return out})();
-const ROUTE_LEN=(()=>{let L=0;for(let i=1;i<ROUTE.length;i++)L+=dist(ROUTE[i-1].x,ROUTE[i-1].y,ROUTE[i].x,ROUTE[i].y);return L})();
-function routeAt(t){let target=t*ROUTE_LEN;for(let i=1;i<ROUTE.length;i++){const a=ROUTE[i-1],b=ROUTE[i],l=dist(a.x,a.y,b.x,b.y);if(target<=l){const k=l?target/l:0;return{x:a.x+(b.x-a.x)*k,y:a.y+(b.y-a.y)*k}}target-=l}return ROUTE[ROUTE.length-1]}
-function routeDist(x,y){let best=1e9;for(let i=1;i<ROUTE.length;i++){const r=segDist(x,y,{x0:ROUTE[i-1].x,y0:ROUTE[i-1].y,x1:ROUTE[i].x,y1:ROUTE[i].y});if(r.d<best)best=r.d}return best}
-function routeIndexNear(x,y){let bi=1,bd=1e9;for(let i=1;i<ROUTE.length;i++){const r=segDist(x,y,{x0:ROUTE[i-1].x,y0:ROUTE[i-1].y,x1:ROUTE[i].x,y1:ROUTE[i].y});if(r.d<bd){bd=r.d;bi=i}}return bi}
-
 /* ================= OUTILS ================= */
 function rand(a,b){return a+Math.random()*(b-a)}
 function pick(a){return a[(Math.random()*a.length)|0]}
@@ -324,14 +322,38 @@ function dist(a,b,c,d){return Math.hypot(c-a,d-b)}
 function clamp(v,a,b){return v<a?a:v>b?b:v}
 function segDist(px,py,b){const dx=b.x1-b.x0,dy=b.y1-b.y0,l2=dx*dx+dy*dy||1;let t=((px-b.x0)*dx+(py-b.y0)*dy)/l2;t=clamp(t,0,1);const qx=b.x0+dx*t,qy=b.y0+dy*t;return{d:Math.hypot(px-qx,py-qy),qx,qy}}
 function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
-const SHIRTS=['#e86a5a','#f0b84a','#5ab8e8','#a57ae0','#ee8a3a','#dcdcdc','#4ac888','#e85aa8','#f0e070','#8ad0c0','#c06040'];
+function pick2(R,a){return a[(R()*a.length)|0]}
+const SHIRTS=['#e86a5a','#f0b84a','#5ab8e8','#a57ae0','#ee8a3a','#dcdcdc','#4ac888','#e85aa8','#f0e070','#8ad0c0','#c06040','#ff8fa0','#7ad04a'];
 const BLACK=['#141414','#1c1c22','#24242a','#101016'];
 const FLAGS=['#e53935','#ffd23f','#2e7d32','#ff7043','#ffffff','#5a8af0'];
 const CIVIL=['#3a3a44','#55555f','#2b3550','#5a4a3a','#45474f','#6a3a3a'];
-const PASSERS=['#c8b89a','#9a9aa8','#b0a090','#8a8f9a','#d0c8b8','#7a8a9a'];
+const PASSERS=['#c8b89a','#9a9aa8','#b0a090','#8a8f9a','#d0c8b8','#7a8a9a','#a89070'];
 const CARCOL=['#c0c4cc','#2a2d34','#8a1c1c','#e8e8ea','#1f3a6a','#6a6f78','#3a5a3a','#b0902a'];
 const has=(sq,w)=>!sq.isVeh&&UT[sq.ut]&&UT[sq.ut].weap.includes(w);
 function fmtEUR(v){return v>=1e6?(v/1e6).toFixed(1).replace('.',',')+' M€':Math.round(v/1000)+' k€'}
+function fmtPeople(n){return(Math.round(n*20/100)*100).toLocaleString('fr-FR')}
+
+/* ================= PARCOURS & BOUCLAGES ================= */
+const ROUTE=(()=>{const pts=PLAZAS.map(p=>blockCenter(p.c,p.r));let out=[pts[0]];
+  for(let i=0;i<pts.length-1;i++){const p=astar(pts[i].x,pts[i].y,pts[i+1].x,pts[i+1].y)||[pts[i+1]];out=out.concat(p)}return out})();
+const ROUTE_LEN=(()=>{let L=0;for(let i=1;i<ROUTE.length;i++)L+=dist(ROUTE[i-1].x,ROUTE[i-1].y,ROUTE[i].x,ROUTE[i].y);return L})();
+function routeAt(t){let target=clamp(t,0,1)*ROUTE_LEN;for(let i=1;i<ROUTE.length;i++){const a=ROUTE[i-1],b=ROUTE[i],l=dist(a.x,a.y,b.x,b.y);if(target<=l){const k=l?target/l:0;return{x:a.x+(b.x-a.x)*k,y:a.y+(b.y-a.y)*k}}target-=l}return ROUTE[ROUTE.length-1]}
+function routeDist(x,y){let best=1e9;for(let i=1;i<ROUTE.length;i++){const r=segDist(x,y,{x0:ROUTE[i-1].x,y0:ROUTE[i-1].y,x1:ROUTE[i].x,y1:ROUTE[i].y});if(r.d<best)best=r.d}return best}
+function routeIndexNear(x,y){let bi=1,bd=1e9;for(let i=1;i<ROUTE.length;i++){const r=segDist(x,y,{x0:ROUTE[i-1].x,y0:ROUTE[i-1].y,x1:ROUTE[i].x,y1:ROUTE[i].y});if(r.d<bd){bd=r.d;bi=i}}return bi}
+// graphe des rues pour la circulation
+const NI=COLS+1,NJ=ROWS+1;const nid=(i,j)=>j*NI+i;const nodeXY=n=>({x:X(n%NI),y:X((n/NI)|0)});
+function edgeOK(i,j,i2,j2){if(i2<0||j2<0||i2>COLS||j2>ROWS)return false;if(j!==j2&&Math.min(j,j2)===RIVER_ROW)return BRIDGES.includes(i);return true}
+const ekey=(a,b)=>a<b?a+'_'+b:b+'_'+a;
+const NEIGH=[];for(let j=0;j<NJ;j++)for(let i=0;i<NI;i++){const l=[];for(const[di,dj]of[[1,0],[-1,0],[0,1],[0,-1]])if(edgeOK(i,j,i+di,j+dj))l.push(nid(i+di,j+dj));NEIGH[nid(i,j)]=l}
+const ROUTE_NODES=new Set();for(let n=0;n<NI*NJ;n++){const p=nodeXY(n);if(routeDist(p.x,p.y)<28)ROUTE_NODES.add(n)}
+function isRouteEdge(a,b){if(!ROUTE_NODES.has(a)||!ROUTE_NODES.has(b))return false;const p=nodeXY(a),q=nodeXY(b);return routeDist((p.x+q.x)/2,(p.y+q.y)/2)<28}
+const CLOSURE_DEFS=[];
+// une rue qui touche ou croise le parcours doit être fermée à la circulation
+for(let n=0;n<NI*NJ;n++)for(const m of NEIGH[n]){if(m<n||isRouteEdge(n,m))continue;const p=nodeXY(n),q=nodeXY(m);let bt=0,bd=1e9;
+  for(let k=0;k<=24;k++){const t=k/24;const d=routeDist(p.x+(q.x-p.x)*t,p.y+(q.y-p.y)*t);if(d<bd){bd=d;bt=t}}
+  if(bd>30)continue;const L=dist(p.x,p.y,q.x,q.y),ux=(q.x-p.x)/L,uy=(q.y-p.y)/L,cx=p.x+(q.x-p.x)*bt,cy=p.y+(q.y-p.y)*bt,key=ekey(n,m);
+  const pts=[];if(bt*L>60)pts.push({x:cx-ux*55,y:cy-uy*55,ang:Math.atan2(-uy,-ux)});if((1-bt)*L>60)pts.push({x:cx+ux*55,y:cy+uy*55,ang:Math.atan2(uy,ux)});
+  for(const pt of pts){if(CLOSURE_DEFS.some(c=>dist(c.x,c.y,pt.x,pt.y)<25))continue;CLOSURE_DEFS.push({...pt,edge:key})}}
 
 /* ================= HACHAGE ================= */
 const HC=24,HW=Math.ceil(W/HC),HH=Math.ceil(H/HC);const hash=Array.from({length:HW*HH},()=>[]);
@@ -341,106 +363,149 @@ function forNear(x,y,r,fn){const i0=Math.max(0,((x-r)/HC)|0),i1=Math.min(HW-1,((
 function nearest(x,y,r,side,filt){let best=null,bd=Infinity;forNear(x,y,r,(a,d2)=>{if(a.side===side&&d2<bd&&(!filt||filt(a))){bd=d2;best=a}});return best}
 function countNear(x,y,r,side,filt){let n=0;forNear(x,y,r,a=>{if(a.side===side&&a.panic<=0&&(!filt||filt(a)))n++});return n}
 function centroidNear(x,y,r,side,filt){let n=0,sx=0,sy=0;forNear(x,y,r,a=>{if(a.side===side&&a.panic<=0&&(!filt||filt(a))){n++;sx+=a.x;sy+=a.y}});return{n,x:n?sx/n:x,y:n?sy/n:y}}
-const isHostile=a=>a.squad.stance==='offensif'||a.squad.role==='casseur';
+const isHostile=a=>a.squad.stance==='offensif'||((a.squad.role==='casseur'||a.squad.role==='opportuniste')&&!a.squad.hidden);
+function nearCiv(x,y,r){let best=null,bd=r;for(const p of game.civ){if(p.dead)continue;const d=dist(x,y,p.x,p.y);if(d<bd){bd=d;best=p}}return best}
 
-/* ================= DÉCOR DYNAMIQUE : COMMERCES & VOITURES ================= */
+/* ================= DÉCOR : COMMERCES & VOITURES GARÉES ================= */
 function makeProps(){const R=rng(23),shops=[],cars=[];
   for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){if(blockType[r][c]!=='b')continue;const x=S+c*P,y=S+r*P;
-    for(let k=20;k<B-20;k+=34){if(R()<.32)shops.push(mkShop(x+k,y-6,'n',R));if(R()<.32)shops.push(mkShop(x+k,y+B+6,'s',R));
-      if(R()<.32)shops.push(mkShop(x-6,y+k,'w',R));if(R()<.32)shops.push(mkShop(x+B+6,y+k,'e',R))}}
+    for(let k=20;k<B-20;k+=34){if(R()<.3)shops.push(mkShop(x+k,y-6,'n',R));if(R()<.3)shops.push(mkShop(x+k,y+B+6,'s',R));
+      if(R()<.3)shops.push(mkShop(x-6,y+k,'w',R));if(R()<.3)shops.push(mkShop(x+B+6,y+k,'e',R))}}
   for(let j=0;j<=ROWS;j++)for(let x=10;x<W-10;x+=26){if(((x%P)+P)%P<S+10)continue;
-    for(const off of[11,S-11]){const y=j*P+off;if(y>WY0-14&&y<WY1+14)continue;if(R()<.33)cars.push({x,y,ang:0,col:pick2(R,CARCOL),state:'ok',burn:0})}}
+    for(const off of[11,S-11]){const y=j*P+off;if(y>WY0-14&&y<WY1+14)continue;if(R()<.28)cars.push({x,y,ang:0,col:pick2(R,CARCOL),state:'ok',burn:0})}}
   for(let i=0;i<=COLS;i++)for(let y=10;y<H-10;y+=26){if(((y%P)+P)%P<S+10)continue;if(y>WY0-14&&y<WY1+14)continue;
-    for(const off of[11,S-11]){const x=i*P+off;if(R()<.33)cars.push({x,y,ang:Math.PI/2,col:pick2(R,CARCOL),state:'ok',burn:0})}}
+    for(const off of[11,S-11]){const x=i*P+off;if(R()<.28)cars.push({x,y,ang:Math.PI/2,col:pick2(R,CARCOL),state:'ok',burn:0})}}
   return{shops,cars}}
 function mkShop(x,y,side,R){const t=SHOP_TYPES[(R()*SHOP_TYPES.length)|0];return{x,y,side,type:t[0],col:t[1],state:'ok',loot:0,burn:0}}
-function pick2(R,a){return a[(R()*a.length)|0]}
 
 /* ================= ÉTAT ================= */
 let game=null,newsDirty=true;
-function newGame(player,scenKey,durMin,diffKey){
-  const sc=SCEN[scenKey],dk=diffKey||'normal',df=DIFF[player==='crowd'?{facile:'difficile',normal:'normal',difficile:'facile'}[dk]:dk];const props=makeProps();
-  game={player,scen:scenKey,sc,df,diff:diffKey||'normal',dur:durMin,t:0,start:sc.start,span:sc.span,minPerSec:sc.span/(durMin*60),
-    agents:[],squads:[],civ:[],proj:[],clouds:[],bars:[],barriers:[],fx:[],landmarks:[],shops:props.shops,cars:props.cars,fires:[],wounded:[],svc:[],
-    op:sc.op,reserve:df.reserve,gasAmmo:140,pendingCrowd:0,damage:0,setupPts:df.budget,
-    stats:{arrests:0,polInj:0,crowdInj:0,civInj:0,dispersed:0,gas:0,lbd:0,stun:0,bars:0,charges:0,vehLost:0,looted:0,carsBurnt:0,shopsBurnt:0,evac:0,firesOut:0,home:0},
-    nid:1,num:{},news:[],over:false,aiP:0,aiC:0,reinfT:0,resT:0,detachT:40,dispT:0,sel:[],targeting:null,placing:null,deployCD:0,speed:1,paused:false,
-    opMarks:{},lastHalf:null,dark:0,wit:1,phase:player==='police'?'setup':'play',marchDone:!sc.march};
+function newGame(demo,scenKey,durMin,diffKey){
+  const sc=SCEN[scenKey],df=DIFF[diffKey];const props=makeProps();
+  const crowdN=Math.round(rand(df.crowd[0],df.crowd[1])),cassN=Math.round(rand(df.cass[0],df.cass[1]));
+  game={demo:!!demo,scen:scenKey,sc,df,diff:diffKey,dur:durMin,t:0,start:11*60,actionAt:180,end:180+sc.span,actionRate:sc.span/(durMin*60),
+    phase:'prep',agents:[],squads:[],civ:[],traffic:[],proj:[],clouds:[],bars:[],barriers:[],fx:[],shops:props.shops,cars:props.cars,fires:[],wounded:[],svc:[],
+    sites:SITES.map(s=>{const c=blockCenter(s.c,s.r);return{...s,x:c.x,y:c.y,breach:0,breached:false,hc:0,pc:0,warned:false}}),
+    closures:CLOSURE_DEFS.map(c=>({...c,on:true,installed:false,assigned:false})),
+    plan:[],roster:{...df.roster},op:50,gasAmmo:160,damage:0,reinfLeft:df.reinf,reinfQueue:[],
+    crowdN,cassN,crowdSpawned:0,cassSpawned:0,
+    intel:{min:Math.round(crowdN*(.8+Math.random()*.1)),max:Math.round(crowdN*(1.1+Math.random()*.15)),rmin:Math.round(cassN*df.cassSize*.7),rmax:Math.round(cassN*df.cassSize*1.3)},
+    stats:{arrests:0,arrCass:0,arrPeace:0,polInj:0,crowdInj:0,crowdInjPeace:0,civInj:0,civGassed:0,wrongArr:0,accidents:0,dispersed:0,gas:0,lbd:0,stun:0,bars:0,charges:0,vehLost:0,looted:0,carsBurnt:0,shopsBurnt:0,evac:0,firesOut:0,home:0,opp:0,magLost:0},
+    nid:1,num:{},news:[],over:false,aiP:0,aiC:0,reinfT:0,detachT:60,dispT:0,sel:[],targeting:null,placing:null,selMarker:null,speed:1,paused:false,
+    opMarks:{},lastHalf:null,dark:0,wit:1,marchDone:false,blockedEdges:new Set()};
   game.dark=darkness(hourAt(0));game.wit=1+.6*(1-game.dark);
-  game.marchSpeed=clamp(ROUTE_LEN/(150/game.minPerSec),8,30); // le défilé dure environ 2 h 30 de jeu
-  LANDMARK_DEFS.forEach(d=>{const c=lmCenter(d);game.landmarks.push({...d,x:c.x,y:c.y,ctrl:-100,owner:'police',cc:0,pc:0})});
-  // la foule
-  const nG=sc.groups,size=Math.round(sc.size*df.crowd);
-  if(sc.march){for(let i=0;i<nG;i++){const p=routeAt(0);const s=spawnSquad(CRO,p.x+rand(-40,40),p.y+rand(-40,40),size,null,'cortege');s.waitT=i*14;}
-    addNews('c',null,'Le cortège déclaré se forme à République. Départ prévu vers Bastille puis place d\'Italie.',ROUTE[0].x,ROUTE[0].y)}
-  else{const sp=[...CROWD_SPAWNS].sort(()=>Math.random()-.5);
-    for(let i=0;i<nG;i++){const s=spawnSquad(CRO,sp[i%sp.length].x+rand(-15,15),sp[i%sp.length].y+rand(-15,15),size,null,i<2?'casseur':'groupe');if(i<2)s.stance='offensif'}
-    addNews('c',null,'Manifestation sauvage : des groupes convergent vers le centre de Paris.')}
-  // services de secours
+  game.marchSpeed=clamp(ROUTE_LEN/(150/game.actionRate),8,30);
   HOSPITALS.forEach(hp=>spawnSvc('samu',hp));CASERNES.forEach(c=>spawnSvc('pompier',c));
-  if(player!=='police'){autoPlace(df.budget);game.phase='play'}
-  addNews('p',null,player==='police'?'PRÉPARATION : placez vos forces le long du parcours avant le départ.':'Dispositif de police en place autour du parcours.');
+  for(let i=0;i<40;i++)spawnTraffic(true);
+  for(let i=0;i<90;i++)spawnCiv(true);
+  if(demo){autoPlan();startSetup(true);game.t=165;game.phase='setup';}
+  else addNews('w',null,'Note du renseignement reçue. Préparez le plan de maintien de l\'ordre.');
 }
 function hourAt(t){return((game.start+t)/60)%24}
 function clock(t){const m=Math.floor(game.start+t)%1440;return String((m/60)|0).padStart(2,'0')+':'+String(m%60).padStart(2,'0')}
 function addNews(kind,time,text,x,y){game.news.unshift({kind,time:time||clock(game.t),text,x,y});if(game.news.length>7)game.news.pop();newsDirty=true}
-function shiftOp(d){game.op=clamp(game.op+d,5,95)}
+function shiftOp(d){game.op=clamp(game.op+d,3,97)}
 function violence(d){shiftOp(d*game.wit)}
 
 function newSquad(side,x,y,ut,role){
   const p=findFree(x,y);
   const key=side===POL?ut:role;game.num[key]=(game.num[key]||0)+1;const n=game.num[key];
   const sq={id:game.nid++,side,ut,role:role||null,members:[],path:[],ax:p.x,ay:p.y,dx:1,dy:0,speed:0,stance:'paisible',sitin:false,
-    gasCD:0,lbdCD:0,stunCD:0,smokeCD:0,chargeCD:0,chargeT:0,callCD:10,barCD:0,lag:0,home:null,goal:null,goalT:0,dead:false,isVeh:false,
-    follow:role==='cortege',waitT:0,task:null,post:null,interv:null,dispersing:false,
-    name:side===POL?UT[ut].name+' · '+n:role==='cortege'?'CORTÈGE '+n:role==='casseur'?'GROUPE AUTONOME '+n:'RASSEMBLEMENT '+n};
-  sq.speed=side===POL?50*UT[ut].speed*SHIELD[UT[ut].shield].spd:(role==='cortege'?(game.marchSpeed||30):role==='casseur'?52:44);
+    gasCD:0,lbdCD:0,stunCD:0,smokeCD:0,chargeCD:0,chargeT:0,callCD:10,barCD:0,lag:0,goal:null,goalT:0,dead:false,isVeh:false,
+    follow:false,waitT:0,task:null,post:null,mission:null,interv:null,dispersing:false,
+    name:side===POL?UT[ut].name+' · '+n:role==='cortege'?'CORTÈGE '+n:role==='casseur'?'BLACK BLOC '+n:role==='opportuniste'?'ÉMEUTIERS '+n:'RASSEMBLEMENT '+n};
+  sq.speed=side===POL?50*UT[ut].speed*SHIELD[UT[ut].shield].spd:(role==='cortege'?(game.marchSpeed||30):role==='casseur'?52:46);
   game.squads.push(sq);return sq;
 }
-function spawnSquad(side,x,y,n,ut,role){const sq=newSquad(side,x,y,ut,role);for(let i=0;i<n;i++)addAgent(sq,sq.ax+rand(-20,20),sq.ay+rand(-20,20));return sq}
-function addAgent(sq,x,y){
+function spawnSquad(side,x,y,n,ut,role){const sq=newSquad(side,x,y,ut,role);for(let i=0;i<n;i++)addAgent(sq,sq.ax+rand(-22,22),sq.ay+rand(-22,22));return sq}
+function addAgent(sq,x,y,col){
   const p=findFree(x,y),ang=Math.random()*6.283,rr=Math.sqrt(Math.random());
   const a={x:p.x,y:p.y,vx:0,vy:0,side:sq.side,squad:sq,hp:100,panic:0,stun:0,fx:0,fy:0,cd:Math.random()*3,gz:Math.random()*3,u:Math.cos(ang)*rr,v:Math.sin(ang)*rr,
-    col:sq.side===CRO?(sq.role==='casseur'?pick(BLACK):pick(SHIRTS)):pick(CIVIL),ski:pick(['#e8e8ee','#e53935','#111','#ffd23f']),
-    flag:sq.side===CRO&&sq.role!=='casseur'&&Math.random()<.14?pick(FLAGS):null,dead:false,idx:0,ppath:null,pT:0,dog:false};
+    col:col||(sq.side===CRO?(sq.role==='casseur'?pick(BLACK):pick(SHIRTS)):pick(CIVIL)),ski:pick(['#e8e8ee','#e53935','#111','#ffd23f']),
+    flag:sq.side===CRO&&sq.role==='cortege'&&Math.random()<.14?pick(FLAGS):null,dead:false,idx:0,ppath:null,pT:0,dog:false};
   if(sq.side===POL){a.hp=UT[sq.ut].hp;a.dog=sq.ut==='K9'}
   sq.members.push(a);game.agents.push(a);return a;
 }
 function spawnVehicle(vt,x,y,cargo){
   const p=VT[vt].air?{x,y}:findFree(x,y);const V=VT[vt];game.num[vt]=(game.num[vt]||0)+1;
   const v={id:game.nid++,side:POL,isVeh:true,vt,members:[],path:[],ax:p.x,ay:p.y,dx:1,dy:0,speed:V.speed,hp:V.hp,maxhp:V.hp,cargo:cargo||null,
-    water:vt==='eau',jet:null,barrierCD:0,dead:false,lag:0,goal:null,slow:1,post:null,interv:null,name:V.name.toUpperCase()+' · '+game.num[vt]};
+    water:vt==='eau',jet:null,barrierCD:0,dead:false,lag:0,goal:null,slow:1,post:null,interv:null,dest:null,closuresQ:[],installT:0,waitT:0,
+    name:V.name.toUpperCase()+' · '+game.num[vt]};
   game.squads.push(v);return v;
 }
-function spawnSvc(kind,base){const p=findFree(base.x,base.y);game.svc.push({kind,x:p.x,y:p.y,dx:1,dy:0,path:[],state:'idle',target:null,base,t:0,jet:null});}
-// découpe un groupe : les membres partent former un groupe autonome
+function spawnSvc(kind,base){const p=findFree(base.x,base.y);game.svc.push({kind,x:p.x,y:p.y,dx:1,dy:0,path:[],state:'idle',target:null,base,t:0,jet:null})}
+function spawnCiv(anywhere){const g=game;let p;
+  if(Math.random()<.3){const s=pick(g.sites.filter(s=>s.type==='mag'));p=findFree(s.x+rand(-150,150),s.y+rand(-150,150))}
+  else if(anywhere){const i=(Math.random()*(COLS+1))|0,j=(Math.random()*(ROWS+1))|0;p=findFree(X(i)+rand(-30,30),X(j)+rand(-30,30))}
+  else{const e=pick(EDGE_SPAWNS);p=findFree(e.x,e.y)}
+  g.civ.push({x:p.x,y:p.y,path:null,panic:0,fx:0,fy:0,col:pick(PASSERS),wait:Math.random()*3,dead:false})}
 function splitSquad(sq,n,role){if(sq.members.length<n+4)return null;
   const ns=newSquad(CRO,sq.ax,sq.ay,null,role);ns.stance=role==='casseur'?'offensif':sq.stance;
   const take=sq.members.slice().sort(()=>Math.random()-.5).slice(0,n);let cx=0,cy=0;
   for(const a of take){a.squad=ns;ns.members.push(a);if(role==='casseur'){a.col=pick(BLACK);a.flag=null}cx+=a.x;cy+=a.y}
   sq.members=sq.members.filter(a=>a.squad===sq);const p=findFree(cx/take.length,cy/take.length);ns.ax=p.x;ns.ay=p.y;return ns}
+function mergeInto(src,dst){for(const a of src.members){a.squad=dst;dst.members.push(a)}src.members=[];src.dead=true}
 
-/* ================= PLACEMENT ================= */
-function autoPlace(budget){const g=game;g.setupPts=budget;const L=g.landmarks.filter(l=>!l.route);
-  const plan=[];
-  L.forEach((l,i)=>plan.push([i%2?'GM':'CRS',l.x+rand(-20,20),l.y+rand(-20,20),l]));
-  for(const t of[.18,.45,.72,.9]){const p=routeAt(t);let best=null,bd=1e9;for(const l of L){const d=dist(p.x,p.y,l.x,l.y);if(d<bd){bd=d;best=l}}
-    const dx=(best.x-p.x)/bd,dy=(best.y-p.y)/bd;plan.push([t<.5?'CI':'CSI',p.x+dx*150,p.y+dy*150,null])}
-  const mid=routeAt(.5);plan.push(['BAC',mid.x-180,mid.y-60,null],['BRAVM',mid.x-260,mid.y+40,null],['eau',routeAt(.98).x-160,routeAt(.98).y,null],['K9',L[2].x+60,L[2].y+40,null],
-    ['BAC',routeAt(.2).x-200,routeAt(.2).y+60,null],['vbrg',routeAt(.35).x-150,routeAt(.35).y,null],['CRS',routeAt(.6).x-260,routeAt(.6).y,null],['helico',mid.x,mid.y,null],['PM',L[0].x+80,L[0].y+60,null]);
-  for(const[k,x,y,home]of plan){if(g.setupPts<deployCost(k))continue;const s=placeUnit(k,x,y);if(s&&home){s.home=home}}
+/* ================= PHASE 1 : PLAN ================= */
+function missionAt(k,x,y){if(UT[k]&&UT[k].bouclage)return'bouclage';for(const s of game.sites)if(dist(x,y,s.x,s.y)<220)return'garde';if(routeDist(x,y)<170)return'encadrement';if(k==='BAC'||k==='BRAVM'||k==='K9')return'interpellation';return'réserve'}
+const MISSION_LABEL={garde:'garde statique',encadrement:'encadrement du parcours',bouclage:'balisage et bouclage',interpellation:'interpellations',réserve:'réserve d\'intervention'};
+function addMarker(k,x,y){const g=game;if(!(g.roster[k]>0))return null;const p=VT[k]&&VT[k].air?{x,y}:findFree(x,y);g.roster[k]--;
+  const m={id:g.nid++,k,x:p.x,y:p.y,mission:missionAt(k,p.x,p.y)};g.plan.push(m);return m}
+function removeMarker(m){const g=game;g.plan=g.plan.filter(q=>q!==m);g.roster[m.k]++;if(g.selMarker===m)g.selMarker=null}
+function autoPlan(){const g=game;for(const m of g.plan.slice())removeMarker(m);
+  const take=(ks,x,y)=>{for(const k of ks)if(g.roster[k]>0)return addMarker(k,x,y);return null};
+  const sites=g.sites;
+  for(const s of sites.filter(s=>s.type==='inst')){const off=routeDist(s.x,s.y);take(['CRS','GM','CI'],s.x+(s.x<ROUTE[0].x?150:-150),s.y)}
+  for(const s of sites.filter(s=>s.type==='mag'))take(['CI','CSI','GM','CRS'],s.x+150,s.y);
+  for(const t of[.2,.5,.8]){const p=routeAt(t);take(['GM','CRS','CSI'],p.x-170,p.y)}
+  const mid=routeAt(.45);take(['BAC'],mid.x-240,mid.y-80);take(['BAC'],routeAt(.15).x-230,routeAt(.15).y+60);take(['BAC'],routeAt(.8).x-230,routeAt(.8).y);
+  take(['BRAVM'],mid.x-420,mid.y+40);take(['BRAVM'],routeAt(.25).x-500,routeAt(.25).y);
+  take(['eau'],routeAt(.97).x-170,routeAt(.97).y);take(['vbrg'],routeAt(.35).x-170,routeAt(.35).y);take(['helico'],mid.x-100,mid.y);
+  take(['K9'],sites[2].x+150,sites[2].y+140);
+  // Police secours et police municipale : postées sur les points de bouclage, en retrait du cortège
+  const cl=g.closures.slice();let i=0;for(const k of['PS','PM'])while(g.roster[k]>0){const c=cl[(i*3)%Math.max(1,cl.length)];i++;if(!c){const p=routeAt(Math.random());addMarker(k,p.x-200,p.y);continue}addMarker(k,c.x+Math.cos(c.ang)*35,c.y+Math.sin(c.ang)*35)}
+  for(const k of ROSTER_ORDER)while(g.roster[k]>0){const p=routeAt(Math.random());if(!addMarker(k,p.x-300,p.y))break}
 }
-function placeUnit(k,x,y){const g=game,c=deployCost(k);if(g.setupPts<c)return null;if(k==='helico'&&g.squads.some(s=>s.vt==='helico'))return null;g.setupPts-=c;
-  let s;if(VT[k])s=spawnVehicle(k,x,y);else s=spawnSquad(POL,x,y,UT[k].n,k);s.post={x:s.ax,y:s.ay};s.placedCost=c;return s}
-function removeUnit(s){if(game.phase!=='setup'||s.side!==POL)return;game.setupPts+=s.placedCost||0;for(const a of s.members)a.dead=true;s.members=[];s.dead=true;game.squads=game.squads.filter(q=>q!==s);game.agents=game.agents.filter(a=>!a.dead)}
-function teleport(s,x,y){const p=VT[s.vt]&&VT[s.vt].air?{x,y}:findFree(x,y);const dx=p.x-s.ax,dy=p.y-s.ay;s.ax=p.x;s.ay=p.y;for(const a of s.members){const q=findFree(a.x+dx,a.y+dy);a.x=q.x;a.y=q.y}s.post={x:s.ax,y:s.ay};s.path=[]}
-function launchDay(){const g=game;if(g.phase!=='setup')return;g.phase='play';g.reserve+=Math.floor(g.setupPts/2);g.setupPts=0;
-  addNews('w',null,g.sc.march?'Le cortège s\'élance de République.':'La nuit commence.',ROUTE[0].x,ROUTE[0].y)}
+function baseFor(k,m){const key=UT[k]?UT[k].base:VT[k].base;if(key!=='local')return BASES[key];let best=null,bd=1e9;for(const b of LOCAL_BASES){const B_=BASES[b];const d=dist(B_.x,B_.y,m.x,m.y);if(d<bd){bd=d;best=B_}}return best}
+/* ================= PHASE 2 : MISE EN PLACE ================= */
+function startSetup(instant){const g=game;g.phase='setup';g.sel=[];g.placing=null;g.selMarker=null;
+  const bouclers=[];
+  g.plan.forEach((m,i)=>{const base=baseFor(m.k,m);let unit;
+    if(instant){if(VT[m.k])unit=spawnVehicle(m.k,m.x,m.y);else unit=spawnSquad(POL,m.x,m.y,UT[m.k].n,m.k);unit.post={x:m.x,y:m.y};unit.mission=m.mission;if(UT[m.k]&&UT[m.k].bouclage)bouclers.push(unit);return}
+    if(VT[m.k]){unit=spawnVehicle(m.k,base.x+rand(-10,10),base.y+rand(-10,10));unit.post={x:m.x,y:m.y}}
+    else if(m.k==='BRAVM'){unit=spawnSquad(POL,base.x,base.y,UT[m.k].n,m.k);unit.post={x:m.x,y:m.y}}
+    else{unit=spawnVehicle(UT[m.k].veh,base.x+rand(-10,10),base.y+rand(-10,10),{ut:m.k,n:UT[m.k].n});unit.dest={x:m.x,y:m.y};unit.name=UT[m.k].name+' · '+(g.num['c'+m.k]=(g.num['c'+m.k]||0)+1)+' (en route)'}
+    unit.mission=m.mission;unit.waitT=(i%6)*2.5;if(UT[m.k]&&UT[m.k].bouclage)bouclers.push(unit)});
+  // répartition des bouclages : chaque équipage prend les points les plus proches
+  const todo=g.closures.filter(c=>c.on);
+  if(instant){for(const c of todo)c.installed=true}
+  else{let guard=0;while(todo.some(c=>!c.assigned)&&bouclers.length&&guard++<200){for(const u of bouclers){const last=u.closuresQ.length?u.closuresQ[u.closuresQ.length-1]:(u.dest||u.post);let best=null,bd=1e9;
+      for(const c of todo){if(c.assigned)continue;const d=dist(last.x,last.y,c.x,c.y);if(d<bd){bd=d;best=c}}if(best){best.assigned=true;u.closuresQ.push(best)}}}}
+  for(const u of g.squads)if(u.side===POL)goNext(u);
+  updateBlocked();
+  if(!instant)addNews('p',null,'Plan validé : '+g.plan.length+' unités quittent leurs casernes et commissariats.');
+}
+function goNext(u){if(u.waitT>0)return;
+  if(u.isVeh&&u.closuresQ&&u.closuresQ.length){const c=u.closuresQ[0];order(u,c.x,c.y);return}
+  const d=u.dest||u.post;if(d)order(u,d.x,d.y)}
+function updateBlocked(){game.blockedEdges=new Set(game.closures.filter(c=>c.installed&&c.edge).map(c=>c.edge))}
+function startAction(){const g=game;g.phase='action';
+  const corteges=g.squads.filter(s=>s.side===CRO&&s.role==='cortege'),cass=g.squads.filter(s=>s.side===CRO&&s.role==='casseur');
+  cass.forEach((s,i)=>{s.follow=true;s.waitT=i*3});corteges.forEach((s,i)=>{s.follow=true;s.waitT=6+i*10});
+  addNews('w',null,'14:00 · Le cortège s\'élance de République. Les black blocs sont en tête.',ROUTE[0].x,ROUTE[0].y);
+  const open=g.closures.filter(c=>!c.installed).length;if(open)addNews('s',null,open+' rue(s) donnant sur le parcours ne sont pas bouclées.')}
 
 /* ================= ORDRES & ARMES ================= */
 function order(sq,x,y){sq.sitin=false;if(sq.isVeh&&VT[sq.vt].air){sq.path=[{x:clamp(x,0,W),y:clamp(y,0,H)}];return}const p=astar(sq.ax,sq.ay,x,y);sq.path=p||[]}
 function followRoute(sq){sq.follow=true;sq.task=null;const i=routeIndexNear(sq.ax,sq.ay);const rest=ROUTE.slice(i);const head=astar(sq.ax,sq.ay,rest[0].x,rest[0].y)||[];sq.path=head.concat(rest.slice(1))}
 function gasRange(sq){return has(sq,'cougar')?420:200}
+function civHarm(x,y,r,kind){// effet sur les passants autour d'un tir
+  for(const p of game.civ){if(p.dead||dist(x,y,p.x,p.y)>r)continue;p.panic=3;const dx=p.x-x,dy=p.y-y,d=Math.hypot(dx,dy)||1;p.fx=dx/d;p.fy=dy/d;
+    if(kind==='gas'&&!p.gassed){p.gassed=true;game.stats.civGassed++;shiftOp(.25*game.wit);if(game.stats.civGassed===1||game.stats.civGassed%8===0)addNews('v',null,'Des passants pris dans les gaz lacrymogènes.',p.x,p.y)}
+    if(kind==='stun'&&dist(x,y,p.x,p.y)<20&&Math.random()<.25)civWound(p,'grenade',1.5,'police')}}
+function civWound(p,cause,opd,by){if(p.dead)return;p.dead=true;game.wounded.push({x:p.x,y:p.y,side:'civ',t:0,stable:false,crit:false,svc:null,cause});game.stats.civInj++;
+  if(by==='police'){shiftOp(opd*game.wit);addNews('v',null,'Un passant blessé ('+cause+') : la police mise en cause.',p.x,p.y)}
+  else{shiftOp(-opd*game.wit);addNews('v',null,'Un passant blessé ('+cause+') par des manifestants violents.',p.x,p.y)}}
 function fireGren(sq,kind,x,y){
   const g=game;let range,cdKey,cd;
   if(kind==='gas'){if(!(has(sq,'cougar')||has(sq,'lacry'))||g.gasAmmo<=0)return false;range=gasRange(sq);cdKey='gasCD';cd=has(sq,'cougar')?16:12}
@@ -450,9 +515,8 @@ function fireGren(sq,kind,x,y){
   const d=dist(sq.ax,sq.ay,x,y);if(d>range){x=sq.ax+(x-sq.ax)/d*range;y=sq.ay+(y-sq.ay)/d*range}
   g.proj.push({kind,x0:sq.ax,y0:sq.ay,x1:x,y1:y,t:0,T:.7+Math.min(d,range)/650});sq[cdKey]=cd;
   if(kind!=='smoke')g.gasAmmo--;
-  // gazer un cortège pacifique coûte plus cher qu'un groupe de casseurs
-  let peaceful=0,hostile=0;forNear(x,y,80,a=>{if(a.side===CRO){if(isHostile(a))hostile++;else peaceful++}});const k=peaceful>hostile?1.5:.5;
-  if(kind==='gas'){g.stats.gas++;violence(.9*k);if(g.stats.gas===1||g.stats.gas%15===0)addNews('w',null,g.stats.gas===1?'Premières grenades lacrymogènes tirées.':g.stats.gas+' grenades lacrymogènes tirées depuis le début.',x,y)}
+  let peaceful=0,hostile=0;forNear(x,y,80,a=>{if(a.side===CRO){if(isHostile(a))hostile++;else peaceful++}});const k=peaceful>hostile?1.6:.4;
+  if(kind==='gas'){g.stats.gas++;violence(.8*k);if(peaceful>hostile*2&&peaceful>8)addNews('c',null,'Des manifestants pacifiques gazés : images très partagées.',x,y)}
   if(kind==='stun'){g.stats.stun++;violence(.5*k)}
   return true;
 }
@@ -462,50 +526,39 @@ function fireLBD(sq,x,y){
   const sh=nearest(t.x,t.y,170,POL,a=>a.squad===sq&&a.panic<=0);if(!sh)return'range';
   game.proj.push({kind:'lbd',x0:sh.x,y0:sh.y,x1:t.x,y1:t.y,t:0,T:.18,target:t});sq.lbdCD=10;game.stats.lbd++;return true;
 }
-function charge(sq){if(sq.isVeh||sq.chargeCD>0)return;sq.chargeT=4;sq.chargeCD=20;game.stats.charges++;violence(.5)}
-function callFriends(g){
-  if(g.callCD>0)return;
-  if(game.op<45){if(game.player==='crowd')addNews('w',null,"Personne ne répond à l'appel : l'opinion n'est pas avec vous (45 % requis).");g.callCD=8;return}
-  if(game.agents.filter(a=>!a.dead&&a.side===CRO).length>=700){g.callCD=10;return}
-  const n=Math.round(8*crowdFlow(hourAt(game.t)));for(let i=0;i<n;i++)addAgent(g,g.ax+rand(-30,30),g.ay+rand(-30,30));g.callCD=40;
-}
+function charge(sq){if(sq.isVeh||sq.chargeCD>0)return;sq.chargeT=4;sq.chargeCD=20;game.stats.charges++;violence(.4)}
 function buildBarricade(g,x,y){
   if(g.barCD>0)return;const p=findFree(x,y);
-  game.bars.push({x:p.x,y:p.y,hp:100,r:26,seed:Math.random()*1000});g.barCD=25;shiftOp(-.6);game.stats.bars++;game.damage+=COST.bar;
+  game.bars.push({x:p.x,y:p.y,hp:100,r:26,seed:Math.random()*1000});g.barCD=25;shiftOp(-.5);game.stats.bars++;game.damage+=COST.bar;
   if(game.stats.bars===1)addNews('c',null,'Première barricade dressée en travers de la rue.',p.x,p.y);
 }
-function deployCost(k){return UT[k]?UT[k].cost:VT[k].cost}
-function deployPolice(k,viaVehicle){
-  const g=game,cost=deployCost(k);if(g.reserve<cost)return null;
-  if(k==='helico'&&g.squads.some(s=>s.vt==='helico'))return null;
-  g.reserve-=cost;const st=pick(POLICE_STATIONS);g.deployCD=1.5;
-  if(VT[k])return spawnVehicle(k,st.x+10,st.y);
-  if(viaVehicle&&k!=='BRAVM')return spawnVehicle(UT[k].veh,st.x+10,st.y,{ut:k,n:UT[k].n});
-  return spawnSquad(POL,st.x+20,st.y,UT[k].n,k);
-}
+function requestReinf(){const g=game;if(g.reinfLeft<=0||g.phase!=='action')return false;g.reinfLeft--;const k=pick(['CRS','GM']);g.reinfQueue.push({at:g.t+30,k});
+  addNews('p',null,'Renfort demandé à la préfecture : une compagnie '+UT[k].name+' arrive dans 30 min.');return true}
 function unload(v){if(!v.isVeh||!v.cargo)return null;const c=v.cargo;v.cargo=null;
-  const sq=newSquad(POL,v.ax-v.dx*20,v.ay-v.dy*20,c.ut);for(let i=0;i<c.n;i++)addAgent(sq,sq.ax+rand(-10,10),sq.ay+rand(-10,10));sq.dx=v.dx;sq.dy=v.dy;return sq}
+  const sq=newSquad(POL,v.ax-v.dx*20,v.ay-v.dy*20,c.ut);for(let i=0;i<c.n;i++)addAgent(sq,sq.ax+rand(-10,10),sq.ay+rand(-10,10));sq.dx=v.dx;sq.dy=v.dy;sq.mission=v.mission;
+  if(v.dest){sq.post={...v.dest};v.dest=null;order(sq,sq.post.x,sq.post.y)}
+  v.transport=true;
+  v.name=VT[v.vt].name.toUpperCase()+' · '+(v.id%100);
+  for(const i in game.sel)if(game.sel[i]===v)game.sel[i]=sq;return sq}
 function embark(sq){if(sq.isVeh)return false;const n=sq.members.length;
   const v=game.squads.find(o=>o.isVeh&&!o.cargo&&VT[o.vt].cap>=n&&dist(o.ax,o.ay,sq.ax,sq.ay)<70);if(!v)return false;
-  v.cargo={ut:sq.ut,n};for(const a of sq.members)a.dead=true;sq.members=[];sq.dead=true;return v}
+  v.cargo={ut:sq.ut,n};v.mission=sq.mission;for(const a of sq.members)a.dead=true;sq.members=[];sq.dead=true;return v}
 function placeBarrier(v){if(v.vt!=='fourgonCRS'||v.barrierCD>0)return;
   const cx=v.ax+v.dx*26,cy=v.ay+v.dy*26,px=-v.dy,py=v.dx;
   game.barriers.push({x0:cx-px*32,y0:cy-py*32,x1:cx+px*32,y1:cy+py*32,hp:160});v.barrierCD=30;}
 function inCloud(x,y,kind){for(const c of game.clouds)if(c.kind===kind&&dist(x,y,c.x,c.y)<c.r)return true;return false}
 function spotted(x,y){for(const s of game.squads)if(s.vt==='helico'&&dist(x,y,s.ax,s.ay)<120)return true;return false}
-// tâches de la foule : piller / incendier
 function nearestProp(list,x,y,r,filt){let best=null,bd=r;for(const o of list){if(!filt(o))continue;const d=dist(x,y,o.x,o.y);if(d<bd){bd=d;best=o}}return best}
 function giveTask(sq,kind){
-  let obj=null;
-  const calm=o=>countNear(o.x,o.y,110,POL)<3;
-  if(kind==='loot')obj=nearestProp(game.shops,sq.ax,sq.ay,550,o=>o.state==='ok'&&calm(o))||nearestProp(game.shops,sq.ax,sq.ay,500,o=>o.state==='ok');
-  else{obj=nearestProp(game.cars,sq.ax,sq.ay,450,o=>o.state==='ok'&&calm(o))||nearestProp(game.cars,sq.ax,sq.ay,400,o=>o.state==='ok');const s=nearestProp(game.shops,sq.ax,sq.ay,300,o=>o.state==='looted');if(s&&(!obj||dist(sq.ax,sq.ay,s.x,s.y)<dist(sq.ax,sq.ay,obj.x,obj.y)))obj=s;
-    let v=null,bd=300;for(const o of game.squads)if(o.isVeh&&!VT[o.vt].air){const d=dist(sq.ax,sq.ay,o.ax,o.ay);if(d<bd){bd=d;v=o}}if(v&&(!obj||bd<dist(sq.ax,sq.ay,obj.x,obj.y)))obj={veh:v,get x(){return v.ax},get y(){return v.ay},get state(){return v.dead?'gone':'ok'},burn:0}}
-  if(!obj)return false;sq.task={kind,obj};sq.follow=false;sq.sitin=false;order(sq,obj.x,obj.y);return true;
+  const calm=o=>countNear(o.x,o.y,110,POL)<3;let obj=null;
+  if(kind==='loot')obj=nearestProp(game.shops,sq.ax,sq.ay,600,o=>o.state==='ok'&&calm(o))||nearestProp(game.shops,sq.ax,sq.ay,450,o=>o.state==='ok');
+  else{obj=nearestProp(game.cars,sq.ax,sq.ay,500,o=>o.state==='ok'&&calm(o))||nearestProp(game.cars,sq.ax,sq.ay,400,o=>o.state==='ok');
+    const s=nearestProp(game.shops,sq.ax,sq.ay,300,o=>o.state==='looted');if(s&&(!obj||dist(sq.ax,sq.ay,s.x,s.y)<dist(sq.ax,sq.ay,obj.x,obj.y)))obj=s}
+  if(!obj)return false;sq.task={kind,obj};sq.follow=false;sq.sitin=false;sq.siteGoal=null;order(sq,obj.x,obj.y);return true;
 }
-function ignite(o,isCar){if(o.state==='burning')return;const prev=o.state;o.state='burning';game.fires.push({x:o.x,y:o.y,obj:o,car:isCar,int:.25,t:0,truck:null,prev});}
-function wound(a,cause){a.dead=true;game.wounded.push({x:a.x,y:a.y,side:a.side,t:0,stable:false,crit:false,svc:null,cause});
-  if(a.side===POL)game.stats.polInj++;else game.stats.crowdInj++}
+function ignite(o,isCar){if(o.state==='burning')return;o.state='burning';game.fires.push({x:o.x,y:o.y,obj:o,car:isCar,int:.25,t:0,truck:null})}
+function wound(a,cause){a.dead=true;game.wounded.push({x:a.x,y:a.y,side:a.side,t:0,stable:false,crit:false,svc:null,cause,hostile:a.side===CRO&&isHostile(a)});
+  if(a.side===POL)game.stats.polInj++;else{game.stats.crowdInj++;if(!isHostile(a))game.stats.crowdInjPeace++}}
 
 /* ================= SIMULATION ================= */
 function slotOf(a){
@@ -513,34 +566,40 @@ function slotOf(a){
   if(a.side===POL){const n=sq.members.length,maxc=sq.ut==='BRAVM'?2:8,cols=Math.min(maxc,n),col=a.idx%cols,row=(a.idx/cols)|0;const sp=sq.ut==='BRAVM'?12:8.5;const lat=(col-(cols-1)/2)*sp,back=row*(sq.ut==='BRAVM'?14:9.5);
     return[sq.ax-sq.dy*lat-sq.dx*back,sq.ay+sq.dx*lat-sq.dy*back]}
   const R=(sq.sitin?3.4:sq.role==='cortege'?6:5.2)*Math.sqrt(sq.members.length)+4;
-  if(sq.role==='cortege'){// le cortège s'étire le long de la rue
-    const along=a.v*R*1.5,lat=a.u*Math.min(R,26);return[sq.ax-sq.dx*along-sq.dy*lat,sq.ay-sq.dy*along+sq.dx*lat]}
+  if(sq.role==='cortege'&&sq.follow){const along=a.v*R*1.5,lat=a.u*Math.min(R,26);return[sq.ax-sq.dx*along-sq.dy*lat,sq.ay-sq.dy*along+sq.dx*lat]}
   return[sq.ax+a.u*R,sq.ay+a.v*R];
 }
 function moveAgent(a,mx,my){const nx=a.x+mx,ny=a.y+my;
   if(!isSolid(nx,ny)){a.x=nx;a.y=ny}else if(!isSolid(nx,a.y))a.x=nx;else if(!isSolid(a.x,ny))a.y=ny}
 
 function step(dt){
-  const g=game;if(g.phase==='setup')return;
-  g.t+=dt*g.minPerSec;
+  const g=game;if(g.phase==='prep'||g.over)return;
+  g.t+=dt*(g.phase==='setup'?1.5:g.actionRate);
+  if(g.phase==='setup'&&g.t>=g.actionAt)startAction();
   const h=hourAt(g.t);g.dark=darkness(h);g.wit=1+.6*(1-g.dark);
   timeEvents(h);
   rebuild();
   const vehs=g.squads.filter(s=>s.isVeh&&!s.dead);
   for(const sq of g.squads){
-    if(sq.isVeh){if(sq.hp<=0){sq.dead=true;g.stats.vehLost++;g.damage+=COST.policeVeh;shiftOp(-1.2);g.fx.push({x:sq.ax,y:sq.ay,t:0,kind:'boom'});addNews('p',null,VT[sq.vt].name+' incendié par la foule.',sq.ax,sq.ay);continue}
+    if(sq.waitT>0){sq.waitT=Math.max(0,sq.waitT-dt);if(sq.waitT===0&&sq.side===POL)goNext(sq)}
+    if(sq.isVeh){if(sq.hp<=0){sq.dead=true;g.stats.vehLost++;g.damage+=COST.policeVeh;shiftOp(-1.2);g.fx.push({x:sq.ax,y:sq.ay,t:0,kind:'boom'});addNews('p',null,VT[sq.vt].name+' incendié par des émeutiers.',sq.ax,sq.ay);continue}
       sq.barrierCD=Math.max(0,sq.barrierCD-dt);
       if(!VT[sq.vt].air){let n=0;forNear(sq.ax,sq.ay,20,a=>{if(a.side===CRO)n++});sq.slow=sq.vt==='vbrg'?Math.max(.5,1-n*.03):Math.max(.15,1-n*.07);
         for(const b of g.bars)if(dist(sq.ax,sq.ay,b.x,b.y)<b.r+12){if(sq.vt==='vbrg')b.hp-=70*dt;else sq.slow=.04}}
       else sq.slow=1;
+      // tournée de bouclage
+      if(sq.closuresQ&&sq.closuresQ.length&&!sq.path.length&&!sq.waitT){const c=sq.closuresQ[0];
+        if(dist(sq.ax,sq.ay,c.x,c.y)<30){sq.installT+=dt;if(sq.installT>5){c.installed=true;sq.installT=0;sq.closuresQ.shift();updateBlocked();goNext(sq)}}else order(sq,c.x,c.y)}
+      // arrivée : débarquement automatique
+      else if(sq.dest&&sq.cargo&&!sq.path.length&&!sq.waitT&&(!sq.closuresQ||!sq.closuresQ.length)){if(dist(sq.ax,sq.ay,sq.dest.x,sq.dest.y)<45){const q=unload(sq);if(q&&g.demo)q.post={x:q.ax,y:q.ay}}else order(sq,sq.dest.x,sq.dest.y)}
     }else{
       sq.members=sq.members.filter(a=>!a.dead);
       if(!sq.members.length){sq.dead=true;continue}
       sq.members.forEach((a,i)=>a.idx=i);
-      for(const k of['gasCD','lbdCD','stunCD','smokeCD','chargeCD','chargeT','callCD','barCD','waitT'])sq[k]=Math.max(0,(sq[k]||0)-dt);
+      for(const k of['gasCD','lbdCD','stunCD','smokeCD','chargeCD','chargeT','callCD','barCD'])sq[k]=Math.max(0,(sq[k]||0)-dt);
       if(sq.sitin)sq.path.length=0;
-      if(sq.side===CRO){
-        if(sq.role==='cortege'&&sq.follow&&!sq.path.length&&!sq.waitT&&!sq.dispersing){if(dist(sq.ax,sq.ay,ROUTE[ROUTE.length-1].x,ROUTE[ROUTE.length-1].y)<60)endOfRoute(sq);else followRoute(sq)}
+      if(sq.side===CRO&&g.phase==='action'){
+        if(sq.follow&&!sq.path.length&&!sq.waitT&&!sq.dispersing){const e=ROUTE[ROUTE.length-1];if(dist(sq.ax,sq.ay,e.x,e.y)<60)endOfRoute(sq);else followRoute(sq)}
         if(sq.dispersing&&Math.random()<dt*.9){const a=pick(sq.members);a.dead=true;g.stats.home++}
         if(sq.task)runTask(sq,dt);
       }
@@ -550,7 +609,7 @@ function step(dt){
       let blocked=1;if(sq.role==='cortege'){const n=countNear(sq.ax+sq.dx*30,sq.ay+sq.dy*30,28,POL);if(n>=4)blocked=.05}
       const sp=sq.speed*(sq.isVeh?sq.slow:(sq.chargeT>0?1.6:1)*(sq.lag>42?.3:1)*blocked)*dt;
       if(d<=sp+.5){sq.ax=wp.x;sq.ay=wp.y;sq.path.shift()}else{sq.ax+=dx/d*sp;sq.ay+=dy/d*sp;const k=sq.isVeh?.12:.2;sq.dx+=(dx/d-sq.dx)*k;sq.dy+=(dy/d-sq.dy)*k;const n=Math.hypot(sq.dx,sq.dy)||1;sq.dx/=n;sq.dy/=n}
-      if(blocked<1){sq.blockT=(sq.blockT||0)+dt;if(sq.blockT>12&&Math.random()<dt*.15){sq.stance='offensif';if(!sq.blockNews){sq.blockNews=true;addNews('c',null,'Le cortège est bloqué par la police : la tension monte.',sq.ax,sq.ay);violence(.8)}}}else sq.blockT=0;
+      if(blocked<1){sq.blockT=(sq.blockT||0)+dt;if(sq.blockT>12&&Math.random()<dt*.15){sq.stance='offensif';if(!sq.blockNews){sq.blockNews=true;addNews('c',null,'Le cortège déclaré est bloqué par la police : la tension monte.',sq.ax,sq.ay);violence(1)}}}else sq.blockT=0;
     }
     sq.lagSum=0;sq.lagN=0;
   }
@@ -574,271 +633,283 @@ function step(dt){
     const k=Math.min(1,dt*10);a.vx+=(vx-a.vx)*k;a.vy+=(vy-a.vy)*k;moveAgent(a,a.vx*dt,a.vy*dt);
   }
   for(const sq of g.squads)sq.lag=sq.lagN?sq.lagSum/sq.lagN:0;
-  // affrontements
+  // contacts
   for(const a of g.agents){if(a.dead)continue;a.cd-=dt;
     if(a.side===POL){const sq=a.squad,ut=UT[sq.ut];
-      if(a.cd<=0&&a.panic<=0){const t=nearest(a.x,a.y,a.dog?15:11,CRO);
-        if(t){const p=.33*ut.arrest*(sq.chargeT>0?3:1)*(t.panic>0||t.stun>0?1.6:1)*(spotted(a.x,a.y)?1.3:1-.35*g.dark)*(t.squad.role==='casseur'?1.3:1);if(Math.random()<p*dt){
-          t.dead=true;a.cd=2.5;g.stats.arrests++;const r=t.squad.role;
-          if(t.squad.sitin)violence(.6);else if(r==='casseur')shiftOp(-.06);else if(r==='cortege'&&t.squad.stance!=='offensif')violence(.25);else violence(.06);
+      if(a.cd<=0&&a.panic<=0){const t=nearest(a.x,a.y,a.dog?15:11,CRO,b=>isHostile(b)||sq.chargeT>0);
+        if(t){const p=.33*ut.arrest*(sq.chargeT>0?3:1)*(t.panic>0||t.stun>0?1.6:1)*(spotted(a.x,a.y)?1.3:1-.35*g.dark)*(isHostile(t)?1.3:.6);if(Math.random()<p*dt){
+          const hostile=isHostile(t);t.dead=true;a.cd=2.5;g.stats.arrests++;
+          if(hostile){g.stats.arrCass++;shiftOp(-.06)}else{g.stats.arrPeace++;violence(t.squad.sitin?.7:.3)}
           g.fx.push({x:t.x,y:t.y,t:0,kind:'arrest'});
-          if(t.squad.sitin&&Math.random()<.15)addNews('c',null,'Images virales : des manifestants assis arrêtés à '+(nearLandmark(t.x,t.y)||'Paris')+'.',t.x,t.y);}}}
-      if(ut.weap.includes('gazeuse')){a.gz-=dt;if(a.gz<=0){const t=nearest(a.x,a.y,22,CRO,b=>b.panic<=0);
-        if(t){a.gz=11+Math.random()*5;forNear(t.x,t.y,12,b=>{if(b.side===CRO){b.panic=Math.max(b.panic,1.6);const ex=b.x-a.x,ey=b.y-a.y,e=Math.hypot(ex,ey)||1;b.fx=ex/e;b.fy=ey/e}});violence(isHostile(t)?.01:.04);g.fx.push({x:a.x,y:a.y,tx:t.x,ty:t.y,t:0,kind:'spray'})}else a.gz=.6}}
+          if(!hostile&&Math.random()<.08)addNews('c',null,'Interpellation musclée d\'un manifestant pacifique, filmée par des passants.',t.x,t.y)}}
+        else if(g.phase==='action'&&Math.random()<dt*(sq.ut==='BAC'?.12:.04)){// confusion : un passant pris pour un casseur
+          const p=nearCiv(a.x,a.y,9);if(p&&countNear(a.x,a.y,50,CRO,isHostile)>=3){p.dead=true;a.cd=4;g.stats.wrongArr++;shiftOp(1.3*g.wit);addNews('v',null,'Un passant interpellé par erreur près des affrontements.',p.x,p.y)}}}
+      if(sq.chargeT>0&&Math.random()<dt*1.5){const p=nearCiv(a.x,a.y,7);if(p)civWound(p,'bousculé lors d\'une charge',1.4,'police')}
+      if(ut.weap.includes('gazeuse')){a.gz-=dt;if(a.gz<=0){const t=nearest(a.x,a.y,22,CRO,b=>b.panic<=0&&isHostile(b));
+        if(t){a.gz=11+Math.random()*5;forNear(t.x,t.y,12,b=>{if(b.side===CRO){b.panic=Math.max(b.panic,1.6);const ex=b.x-a.x,ey=b.y-a.y,e=Math.hypot(ex,ey)||1;b.fx=ex/e;b.fy=ey/e}});violence(isHostile(t)?.01:.06);g.fx.push({x:a.x,y:a.y,tx:t.x,ty:t.y,t:0,kind:'spray'})}else a.gz=.6}}
       if(a.dog&&Math.random()<dt*1.2)forNear(a.x,a.y,18,b=>{if(b.side===CRO&&Math.random()<.4){b.panic=Math.max(b.panic,1);const ex=b.x-a.x,ey=b.y-a.y,e=Math.hypot(ex,ey)||1;b.fx=ex/e;b.fy=ey/e}});
       let n=0;forNear(a.x,a.y,16,b=>{if(b.side===CRO&&b.panic<=0&&isHostile(b))n++});
-      if(n>=8)a.hp-=3*dt*SHIELD[ut.shield].dmg;else if(n===0&&a.hp<ut.hp)a.hp=Math.min(ut.hp,a.hp+1.5*dt);
-    }else if(isHostile(a)&&!a.squad.sitin&&a.panic<=0&&a.stun<=0&&a.cd<=0){
-      const t=nearest(a.x,a.y,115,POL);const rate=(spotted(a.x,a.y)?2:1)/g.df.agg;
-      if(t){g.proj.push({kind:'stone',x0:a.x,y0:a.y,x1:t.x+rand(-6,6),y1:t.y+rand(-6,6),t:0,T:.35+dist(a.x,a.y,t.x,t.y)/300,target:t});a.cd=(3.5+Math.random()*3.5)*rate;shiftOp(-.02)}
-      else{let v=null,bd=115;for(const o of vehs){if(VT[o.vt].air)continue;const d=dist(a.x,a.y,o.ax,o.ay);if(d<bd){bd=d;v=o}}
-        if(v){g.proj.push({kind:'stone',x0:a.x,y0:a.y,x1:v.ax+rand(-6,6),y1:v.ay+rand(-6,6),t:0,T:.35+bd/300,veh:v});a.cd=(3.5+Math.random()*3.5)*rate;shiftOp(-.02)}else a.cd=.6}}
+      if(n>=7)a.hp-=3.5*dt*SHIELD[ut.shield].dmg;else if(n===0&&a.hp<ut.hp)a.hp=Math.min(ut.hp,a.hp+1.5*dt);
+    }else if(isHostile(a)&&!a.squad.sitin&&a.panic<=0&&a.stun<=0){
+      if(a.cd<=0){const t=nearest(a.x,a.y,115,POL);const rate=spotted(a.x,a.y)?2:1;
+        if(t){g.proj.push({kind:'stone',x0:a.x,y0:a.y,x1:t.x+rand(-8,8),y1:t.y+rand(-8,8),t:0,T:.35+dist(a.x,a.y,t.x,t.y)/300,target:t});a.cd=(3.5+Math.random()*3.5)*rate;shiftOp(-.02)}
+        else{let v=null,bd=115;for(const o of vehs){if(VT[o.vt].air)continue;const d=dist(a.x,a.y,o.ax,o.ay);if(d<bd){bd=d;v=o}}
+          if(v){g.proj.push({kind:'stone',x0:a.x,y0:a.y,x1:v.ax+rand(-6,6),y1:v.ay+rand(-6,6),t:0,T:.35+bd/300,veh:v});a.cd=(3.5+Math.random()*3.5)*rate;shiftOp(-.02)}else a.cd=.6}}
+      if(Math.random()<dt*.012){const p=nearCiv(a.x,a.y,9);if(p)civWound(p,'agressé alors qu\'il filmait',1,'crowd')}}
   }
   for(const v of vehs){if(VT[v.vt].air)continue;let n=0;forNear(v.ax,v.ay,24,b=>{if(b.side===CRO&&b.panic<=0&&isHostile(b))n++});if(n>=10)v.hp-=8*dt}
   for(const a of g.agents)if(!a.dead&&a.side===POL&&a.hp<=0){wound(a,'projectiles');shiftOp(-.5);g.fx.push({x:a.x,y:a.y,t:0,kind:'hit'});
     if(g.stats.polInj===1||g.stats.polInj%10===0)addNews('p',null,g.stats.polInj===1?'Un premier policier blessé au sol.':g.stats.polInj+' policiers blessés depuis le début.',a.x,a.y)}
   for(const v of vehs){v.jet=null;
     if(v.vt==='eau'&&v.water){const t=nearest(v.ax,v.ay,150,CRO,b=>b.panic<=0);
-      if(t){v.jet={x:t.x,y:t.y};forNear(t.x,t.y,40,b=>{if(b.side!==CRO)return;b.panic=Math.max(b.panic,1.3);const ex=b.x-v.ax,ey=b.y-v.ay,e=Math.hypot(ex,ey)||1;b.fx=ex/e;b.fy=ey/e});violence((isHostile(t)?.08:.25)*dt)}
+      if(t){v.jet={x:t.x,y:t.y};forNear(t.x,t.y,40,b=>{if(b.side!==CRO)return;b.panic=Math.max(b.panic,1.3);const ex=b.x-v.ax,ey=b.y-v.ay,e=Math.hypot(ex,ey)||1;b.fx=ex/e;b.fy=ey/e});violence((isHostile(t)?.06:.25)*dt);
+        for(const p of g.civ)if(!p.dead&&dist(p.x,p.y,t.x,t.y)<40&&p.panic<=0){p.panic=2;shiftOp(.1*g.wit)}}
       for(const b of g.bars)if(dist(v.ax,v.ay,b.x,b.y)<150){b.hp-=25*dt;if(!v.jet)v.jet={x:b.x,y:b.y}}
       for(const f of g.fires)if(dist(v.ax,v.ay,f.x,f.y)<150){f.int-=.15*dt;if(!v.jet)v.jet={x:f.x,y:f.y}}}}
   // projectiles
   for(const p of g.proj){p.t+=dt;if(p.t>=p.T){p.done=true;
-    if(p.kind==='gas')g.clouds.push({kind:'gas',x:p.x1,y:p.y1,t:0,life:13,r:20});
+    if(p.kind==='gas'){g.clouds.push({kind:'gas',x:p.x1,y:p.y1,t:0,life:13,r:20})}
     else if(p.kind==='smoke')g.clouds.push({kind:'smoke',x:p.x1,y:p.y1,t:0,life:16,r:20});
-    else if(p.kind==='stun'){g.fx.push({x:p.x1,y:p.y1,t:0,kind:'flash'});forNear(p.x1,p.y1,60,b=>{if(b.side!==CRO)return;b.stun=3;b.panic=Math.max(b.panic,2.4);const ex=b.x-p.x1,ey=b.y-p.y1,e=Math.hypot(ex,ey)||1;b.fx=ex/e;b.fy=ey/e;if(e<14&&Math.random()<.12)wound(b,'grenade')})}
-    else if(p.kind==='lbd'){const t=p.target;if(t&&!t.dead&&dist(t.x,t.y,p.x1,p.y1)<16){if(Math.random()<.5){wound(t,'LBD');violence(isHostile(t)?.3:.8);g.fx.push({x:t.x,y:t.y,t:0,kind:'hit'});
-        if(g.stats.crowdInj===1||g.stats.crowdInj%10===0)addNews('c',null,g.stats.crowdInj===1?'Un manifestant blessé par un tir de LBD.':g.stats.crowdInj+' manifestants blessés, la polémique enfle.',t.x,t.y)}else{t.panic=2;t.stun=2}}}
+    else if(p.kind==='stun'){g.fx.push({x:p.x1,y:p.y1,t:0,kind:'flash'});civHarm(p.x1,p.y1,55,'stun');forNear(p.x1,p.y1,60,b=>{if(b.side!==CRO)return;b.stun=3;b.panic=Math.max(b.panic,2.4);const ex=b.x-p.x1,ey=b.y-p.y1,e=Math.hypot(ex,ey)||1;b.fx=ex/e;b.fy=ey/e;if(e<14&&Math.random()<.12)wound(b,'grenade')})}
+    else if(p.kind==='lbd'){const t=p.target;const cv=nearCiv(p.x1,p.y1,14);
+      if(cv&&Math.random()<.3){civWound(cv,'tir de LBD',2.5,'police')}
+      else if(t&&!t.dead&&dist(t.x,t.y,p.x1,p.y1)<16){if(Math.random()<.5){const hostile=isHostile(t);wound(t,'LBD');violence(hostile?.25:1.2);g.fx.push({x:t.x,y:t.y,t:0,kind:'hit'});
+          if(!hostile)addNews('c',null,'Un manifestant pacifique blessé par un tir de LBD.',t.x,t.y)}else{t.panic=2;t.stun=2}}}
     else if(p.veh){if(!p.veh.dead)p.veh.hp-=2}
-    else if(p.target&&!p.target.dead&&dist(p.target.x,p.target.y,p.x1,p.y1)<14&&!inCloud(p.target.x,p.target.y,'smoke')){p.target.hp-=9*SHIELD[UT[p.target.squad.ut].shield].dmg;g.fx.push({x:p.x1,y:p.y1,t:0,kind:'spark'})}}}
+    else{const cv=nearCiv(p.x1,p.y1,9);if(cv&&Math.random()<.3)civWound(cv,'touché par un projectile',.9,'crowd');
+      else if(p.target&&!p.target.dead&&dist(p.target.x,p.target.y,p.x1,p.y1)<14&&!inCloud(p.target.x,p.target.y,'smoke')){p.target.hp-=9*SHIELD[UT[p.target.squad.ut].shield].dmg;g.fx.push({x:p.x1,y:p.y1,t:0,kind:'spark'})}}}}
   g.proj=g.proj.filter(p=>!p.done);
   for(const c of g.clouds){c.t+=dt;const max=c.kind==='gas'?95:85;c.r=Math.min(max,25+c.t*50)*(c.t>c.life-3?Math.max(0,(c.life-c.t)/3):1);
     if(c.kind==='gas'){forNear(c.x,c.y,c.r,a=>{if(a.side!==CRO)return;if(a.panic<.4){a.panic=2.2;const dx=a.x-c.x,dy=a.y-c.y,d=Math.hypot(dx,dy)||1;a.fx=dx/d;a.fy=dy/d}
       if(Math.random()<.035*dt){a.dead=true;g.stats.dispersed++}});
-      for(const p of g.civ)if(p.panic<=0&&dist(p.x,p.y,c.x,c.y)<c.r){p.panic=3;const dx=p.x-c.x,dy=p.y-c.y,d=Math.hypot(dx,dy)||1;p.fx=dx/d;p.fy=dy/d;shiftOp(.15*g.wit)}}}
+      if(c.t<4)civHarm(c.x,c.y,c.r,'gas')}}
   g.clouds=g.clouds.filter(c=>c.t<c.life);
   for(const b of g.bars)forNear(b.x,b.y,b.r+8,a=>{if(a.side===POL)b.hp-=7*dt});
   g.bars=g.bars.filter(b=>b.hp>0);
   for(const b of g.barriers){const mx=(b.x0+b.x1)/2,my=(b.y0+b.y1)/2;forNear(mx,my,40,a=>{if(a.side===CRO&&isHostile(a)&&segDist(a.x,a.y,b).d<14)b.hp-=3*dt})}
   g.barriers=g.barriers.filter(b=>b.hp>0);
-  updateFires(dt);updateWounded(dt);updateServices(dt);
+  updateFires(dt);updateWounded(dt);updateServices(dt);updateTraffic(dt);updateCivilians(dt);updateSites(dt);updateCrowdArrivals(dt);
   for(const f of g.fx)f.t+=dt;g.fx=g.fx.filter(f=>f.t<(f.kind==='boom'?1.6:.8));
-  updateCivilians(dt);
-  // lieux sensibles
-  for(const l of g.landmarks){if(l.route)continue;let cc=0,pc=0;forNear(l.x,l.y,LR,a=>{if(a.panic>0)return;if(a.side===CRO)cc+=a.squad.sitin?2:1;else pc++});
-    for(const v of vehs)if(!VT[v.vt].air&&dist(v.ax,v.ay,l.x,l.y)<LR)pc+=3;l.cc=cc;l.pc=pc;
-    let rate=0;if(cc>0&&pc===0)rate=Math.min(cc,25)*.55;else if(pc>0&&cc===0)rate=-Math.min(pc,10)*1.4;else if(cc>0)rate=(cc*.5-pc*1.75)*.4;
-    l.ctrl=clamp(l.ctrl+rate*dt,-100,100);
-    if(l.ctrl>=100&&l.owner!=='crowd'){l.owner='crowd';addNews('c',null,'La foule prend '+l.name+' !',l.x,l.y)}
-    if(l.ctrl<=-100&&l.owner!=='police'){l.owner='police';addNews('p',null,'La police reprend '+l.name+'.',l.x,l.y)}}
-  // renforts
-  g.reinfT+=dt;if(g.reinfT>=12){g.reinfT=0;g.pendingCrowd+=Math.round(g.op/8*crowdFlow(h)*g.df.crowd);
-    const nc=g.agents.filter(a=>!a.dead&&a.side===CRO).length,ng=g.squads.filter(s=>s.side===CRO).length;
-    if(g.pendingCrowd>=14&&nc<700&&ng<20){const n=Math.min(30,g.pendingCrowd);g.pendingCrowd-=n;
-      if(!g.marchDone){const p=routeAt(0);const s=spawnSquad(CRO,p.x,p.y,n,null,'cortege');addNews('c',null,n+' personnes rejoignent le cortège à République.',p.x,p.y)}
-      else{const k=(Math.random()*CROWD_SPAWNS.length)|0,s=CROWD_SPAWNS[k];spawnSquad(CRO,s.x,s.y,n,null,'groupe');addNews('c',null,'Un rassemblement de '+n+' personnes arrive de '+SPAWN_NAMES[k]+'.',s.x,s.y)}}}
-  g.resT+=dt;if(g.resT>=15){g.resT=0;g.reserve+=Math.round((100-g.op)/22)}
-  g.deployCD=Math.max(0,g.deployCD-dt);
-  if(!g.marchDone&&!g.squads.some(s=>s.role==='cortege'&&!s.dispersing)&&g.t>60){g.marchDone=true}
+  for(const r of g.reinfQueue)if(!r.done&&g.t>=r.at){r.done=true;const b=BASES[UT[r.k].base];const v=spawnVehicle(UT[r.k].veh,b.x,b.y,{ut:r.k,n:UT[r.k].n});addNews('p',null,'Renfort arrivé : compagnie '+UT[r.k].name+' à la '+b.name.toLowerCase()+'.',b.x,b.y);if(g.demo){v.dest={x:routeAt(.5).x-200,y:routeAt(.5).y};}}
   for(const th of[35,65]){const above=g.op>=th;if(g.opMarks[th]===undefined)g.opMarks[th]=above;else if(g.opMarks[th]!==above){g.opMarks[th]=above;
-    addNews(th===65?'c':'p',null,th===65?(above?"Sondage : l'opinion bascule nettement du côté de la foule.":"Sondage : le soutien à la foule s'effrite."):(above?"Sondage : la police perd le soutien de l'opinion.":"Sondage : l'opinion se range derrière la police."))}}
-  g.aiP-=dt;g.aiC-=dt;
-  if(g.player!=='police'&&g.aiP<=0){g.aiP=1.5;policeAI()}
-  if(g.player!=='crowd'&&g.aiC<=0){g.aiC=2;crowdAI()}
-  if(g.player==='crowd'){// même joueur foule : les cortèges suivent le parcours et des casseurs se détachent seuls
-    detachAI(dt)}
+    addNews(th===65?'c':'p',null,th===65?(above?"Sondage : l'opinion se retourne contre la police.":"Sondage : la police regagne du crédit."):(above?"Sondage : l'opinion s'inquiète des méthodes policières.":"Sondage : l'opinion condamne les violences des manifestants."))}}
+  g.op+=(50-g.op)*.004*dt; // l'opinion revient lentement à l'équilibre
+  if(g.phase==='action'){g.aiC-=dt;if(g.aiC<=0){g.aiC=2;crowdAI()}}
+  if(g.demo){g.aiP-=dt;if(g.aiP<=0){g.aiP=1.5;policeAI()}}
   if(g.agents.length>50&&g.agents.some(a=>a.dead))g.agents=g.agents.filter(a=>!a.dead);
+  if(g.civ.some(p=>p.dead))g.civ=g.civ.filter(p=>!p.dead);
   checkEnd();
 }
+function updateCrowdArrivals(dt){const g=game;
+  // rassemblement à République pendant la mise en place, black blocs en dernier
+  if(g.phase==='setup'&&g.t>40){const want=Math.round(g.crowdN*clamp((g.t-40)/120,0,1));
+    while(g.crowdSpawned<want){const n=Math.min(30,g.crowdN-g.crowdSpawned);if(n<=0)break;const c=blockCenter(PLAZAS[0].c,PLAZAS[0].r);
+      const e=pick([{x:X(8),y:X(0)},{x:X(9),y:X(1)},{x:X(8),y:X(2)},{x:X(7),y:X(2)},{x:X(7),y:X(0)}]);const s=spawnSquad(CRO,e.x,e.y,n,null,'cortege');order(s,c.x+rand(-60,60),c.y+rand(-60,60));g.crowdSpawned+=n}
+    if(g.t>140&&g.cassSpawned<g.cassN){const c=blockCenter(PLAZAS[0].c,PLAZAS[0].r);const s=spawnSquad(CRO,X(8),X(1)+rand(-30,30),g.df.cassSize,null,'casseur');s.stance='paisible';s.hidden=true;order(s,c.x+rand(-40,40),c.y+90);g.cassSpawned++;
+      if(g.cassSpawned===1)addNews('w',null,'Le renseignement signale des individus vêtus de noir qui rejoignent République.',c.x,c.y)}}
+  if(g.phase!=='action')return;
+  g.reinfT+=dt;if(g.reinfT>=14){g.reinfT=0;const nc=g.agents.filter(a=>!a.dead&&a.side===CRO).length;
+    if(!g.marchDone&&nc<700){const n=Math.round(g.op/12*crowdFlow(hourAt(g.t)));if(n>=4){const p=routeAt(0);spawnSquad(CRO,p.x,p.y,n,null,'cortege').follow=true}}}
+  if(!g.marchDone&&g.t>g.actionAt+20&&!g.squads.some(s=>s.role==='cortege'&&!s.dispersing))g.marchDone=true;
+}
 function endOfRoute(sq){sq.follow=false;const g=game;
-  if(!g.endNews){g.endNews=true;addNews('w',null,"Fin du parcours place d'Italie : le cortège se disperse.",sq.ax,sq.ay)}
-  const frac=.2+.3*g.dark;const n=Math.round(sq.members.length*frac);if(n>=6)splitSquad(sq,n,Math.random()<.5?'casseur':'groupe');sq.dispersing=true}
+  if(!g.endNews){g.endNews=true;addNews('w',null,"Tête du cortège place d'Italie : la dispersion commence.",sq.ax,sq.ay)}
+  const frac=.12+.3*g.dark;const n=Math.round(sq.members.length*frac);if(n>=6)splitSquad(sq,n,Math.random()<.4?'casseur':'groupe');sq.dispersing=true}
 function runTask(sq,dt){const g=game,t=sq.task,o=t.obj;
   if(o.state!=='ok'&&!(t.kind==='burn'&&o.state==='looted')){sq.task=null;return}
   const d=dist(sq.ax,sq.ay,o.x,o.y);
   if(d>30){if(!sq.path.length)order(sq,o.x,o.y);return}
   let n=0;for(const a of sq.members)if(a.panic<=0&&dist(a.x,a.y,o.x,o.y)<40)n++;if(n<3)return;
-  if(t.kind==='loot'){o.loot+=dt*Math.min(n,8)/48;if(o.loot>=1){o.state='looted';g.damage+=COST.shopLooted;g.stats.looted++;shiftOp(-1.1*g.wit);sq.task=null;
-      if(g.stats.looted===1||g.stats.looted%5===0||Math.random()<.3)addNews('c',null,o.type+' pillé'+(o.type.endsWith('e')&&!o.type.startsWith('Magasin')?'e':'')+' par un groupe autonome.',o.x,o.y);
+  if(t.kind==='loot'){o.loot+=dt*Math.min(n,8)/48;if(o.loot>=1){o.state='looted';g.damage+=COST.shopLooted;g.stats.looted++;shiftOp(-1*g.wit);sq.task=null;
+      if(g.stats.looted===1||g.stats.looted%4===0||Math.random()<.3)addNews('c',null,o.type+' pillé(e) par '+(sq.role==='opportuniste'?'des émeutiers':'un black bloc')+'.',o.x,o.y);
       g.fx.push({x:o.x,y:o.y,t:0,kind:'spark'});
-      if(g.player!=='crowd'&&Math.random()<.3+.4*g.dark)sq.task={kind:'burn',obj:o}}}
-  else{o.burn=(o.burn||0)+dt/2.5;if(o.burn>=1){sq.task=null;
-      if(o.veh){o.veh.hp-=o.veh.maxhp*.6;g.fx.push({x:o.x,y:o.y,t:0,kind:'boom'})}
-      else{const isCar=g.cars.includes(o);ignite(o,isCar);shiftOp(-.6*g.wit);if(!g.firstFire){g.firstFire=true;addNews('c',null,isCar?'Une première voiture incendiée.':'Un commerce en feu.',o.x,o.y)}}}}
+      if(Math.random()<.3+.4*g.dark)sq.task={kind:'burn',obj:o}}}
+  else{o.burn=(o.burn||0)+dt/2.5;if(o.burn>=1){sq.task=null;const isCar=g.cars.includes(o);ignite(o,isCar);shiftOp(-.5*g.wit);if(!g.firstFire){g.firstFire=true;addNews('c',null,isCar?'Une première voiture incendiée.':'Un commerce en feu.',o.x,o.y)}}}
 }
+function updateSites(dt){const g=game;if(g.phase!=='action')return;
+  for(const s of g.sites){if(s.breached){continue}let hc=0,pc=0;forNear(s.x,s.y,170,a=>{if(a.panic>0)return;if(a.side===CRO){if(isHostile(a))hc++}else pc++});
+    for(const v of g.squads)if(v.isVeh&&!VT[v.vt].air&&dist(v.ax,v.ay,s.x,s.y)<170)pc+=4;s.hc=hc;s.pc=pc;
+    if(hc>=8&&pc*3<hc){s.breach+=dt*hc/12/(s.type==='inst'?40:25);if(!s.warned&&s.breach>.15){s.warned=true;addNews('s',null,(s.type==='inst'?'ALERTE · ':'')+'Des casseurs attaquent '+s.name+' !',s.x,s.y)}}
+    else s.breach=Math.max(0,s.breach-dt*(pc>0?.06:.015));
+    if(s.breach>=1){s.breached=true;
+      if(s.type==='inst'){if(!g.demo)endGame('defeat','Intrusion dans le '+s.name.replace("Ministère","ministère")+'. Le préfet est relevé de ses fonctions.');else addNews('c',null,'Intrusion : '+s.name,s.x,s.y)}
+      else{g.damage+=COST.magasin;g.stats.magLost++;shiftOp(-2*g.wit);addNews('c',null,s.name+' pris d\'assaut et pillé : images dans le monde entier.',s.x,s.y);
+        for(let k=0;k<3;k++){const sh=nearestProp(g.shops,s.x,s.y,220,o=>o.state==='ok');if(sh){sh.state='looted'}}}}}}
 function updateFires(dt){const g=game;
   for(const f of g.fires){f.t+=dt;f.int=Math.min(1,f.int+.03*dt);
-    if(f.int>.6&&Math.random()<dt*.05){const c=nearestProp(g.cars,f.x,f.y,28,o=>o.state==='ok');if(c)ignite(c,true);else{const s=nearestProp(g.shops,f.x,f.y,40,o=>o.state==='ok'||o.state==='looted');if(s){ignite(s,false);addNews('s',null,'Le feu se propage à un '+s.type.toLowerCase()+'.',s.x,s.y)}}}
+    if(f.int>.6&&Math.random()<dt*.05){const c=nearestProp(g.cars,f.x,f.y,28,o=>o.state==='ok');if(c)ignite(c,true);else{const s=nearestProp(g.shops,f.x,f.y,40,o=>o.state==='ok'||o.state==='looted');if(s){ignite(s,false);addNews('s',null,'Le feu se propage à un commerce ('+s.type.toLowerCase()+').',s.x,s.y)}}}
     if(f.int>.5)forNear(f.x,f.y,12,a=>{if(Math.random()<.02*dt)wound(a,'brûlures')});
-    for(const p of g.civ)if(p.panic<=0&&dist(p.x,p.y,f.x,f.y)<40){p.panic=2;const dx=p.x-f.x,dy=p.y-f.y,d=Math.hypot(dx,dy)||1;p.fx=dx/d;p.fy=dy/d}
+    for(const p of g.civ)if(!p.dead&&dist(p.x,p.y,f.x,f.y)<45){if(p.panic<=0){p.panic=2;const dx=p.x-f.x,dy=p.y-f.y,d=Math.hypot(dx,dy)||1;p.fx=dx/d;p.fy=dy/d}if(f.int>.6&&dist(p.x,p.y,f.x,f.y)<14&&Math.random()<.03*dt)civWound(p,'brûlé',.4,'crowd')}
     if(f.int<=0){f.done=true;f.obj.state='burnt';g.stats.firesOut++;g.damage+=f.car?COST.carSaved:COST.shopSaved}
-    else if(f.t>75){f.done=true;f.obj.state='burnt';if(f.car){g.damage+=COST.carBurnt;g.stats.carsBurnt++}else{g.damage+=COST.shopBurnt;g.stats.shopsBurnt++;addNews('s',null,'Un '+f.obj.type.toLowerCase()+' entièrement détruit par les flammes.',f.x,f.y)}}}
+    else if(f.t>75){f.done=true;f.obj.state='burnt';if(f.car){g.damage+=COST.carBurnt;g.stats.carsBurnt++}else{g.damage+=COST.shopBurnt;g.stats.shopsBurnt++;addNews('s',null,'Un commerce ('+f.obj.type.toLowerCase()+') entièrement détruit par les flammes.',f.x,f.y)}}}
   g.fires=g.fires.filter(f=>!f.done)}
 function updateWounded(dt){const g=game;
   for(const w of g.wounded){w.t+=dt;
-    if(!w.stable&&w.side===CRO&&countNear(w.x,w.y,45,CRO)>=3){w.stable=true} // street medics
+    if(!w.stable&&w.side===CRO&&countNear(w.x,w.y,45,CRO)>=3)w.stable=true;
     if(!w.crit&&w.t>(w.stable?140:80)){w.crit=true;
-      if(w.side===POL){shiftOp(-1);addNews('p',null,'Un policier blessé attend toujours les secours.',w.x,w.y)}else{violence(1.2);addNews('c',null,'Un manifestant blessé attend les secours depuis trop longtemps.',w.x,w.y)}}}}
+      if(w.side===POL){shiftOp(-1);addNews('s',null,'Un policier blessé attend toujours les secours.',w.x,w.y)}
+      else{shiftOp((w.hostile?.3:1.2)*g.wit);addNews('s',null,(w.side==='civ'?'Un passant':'Un manifestant')+' blessé attend les secours depuis trop longtemps.',w.x,w.y)}}}}
 function updateServices(dt){const g=game;g.dispT-=dt;
+  function back(s){s.state='back';s.target=null;s.path=astar(s.x,s.y,s.base.x,s.base.y)||[]}
   if(g.dispT<=0){g.dispT=1;
     for(const w of g.wounded){if(w.svc)continue;let v=null,bd=1e9;for(const s of g.svc)if(s.kind==='samu'&&s.state==='idle'){const d=dist(s.x,s.y,w.x,w.y);if(d<bd){bd=d;v=s}}
-      if(!v&&g.svc.filter(s=>s.kind==='samu').length<10){let hb=null,hd=1e9;for(const hp of HOSPITALS){const d=dist(hp.x,hp.y,w.x,w.y);if(d<hd){hd=d;hb=hp}}spawnSvc('samu',hb);v=g.svc[g.svc.length-1]}
+      if(!v&&g.svc.filter(s=>s.kind==='samu').length<12){let hb=null,hd=1e9;for(const hp of HOSPITALS){const d=dist(hp.x,hp.y,w.x,w.y);if(d<hd){hd=d;hb=hp}}spawnSvc('samu',hb);v=g.svc[g.svc.length-1]}
       if(!v)break;v.target=w;w.svc=v;v.state='go';v.path=astar(v.x,v.y,w.x,w.y)||[]}
     for(const f of g.fires){if(f.truck)continue;let v=null,bd=1e9;for(const s of g.svc)if(s.kind==='pompier'&&s.state==='idle'){const d=dist(s.x,s.y,f.x,f.y);if(d<bd){bd=d;v=s}}
-      if(!v&&g.svc.filter(s=>s.kind==='pompier').length<8){let cb=null,cd=1e9;for(const c of CASERNES){const d=dist(c.x,c.y,f.x,f.y);if(d<cd){cd=d;cb=c}}spawnSvc('pompier',cb);v=g.svc[g.svc.length-1]}
+      if(!v&&g.svc.filter(s=>s.kind==='pompier').length<9){let cb=null,cd=1e9;for(const c of CASERNES){const d=dist(c.x,c.y,f.x,f.y);if(d<cd){cd=d;cb=c}}spawnSvc('pompier',cb);v=g.svc[g.svc.length-1]}
       if(!v)break;v.target=f;f.truck=v;v.state='go';v.path=astar(v.x,v.y,f.x,f.y)||[]}}
   for(const s of g.svc){s.jet=null;
     if(s.state==='go'&&s.kind==='samu'&&!g.wounded.includes(s.target))back(s);
-    if(s.state==='go'&&s.kind==='pompier'&&(s.target.done||!g.fires.includes(s.target)))back(s);
+    if(s.state==='go'&&s.kind==='pompier'&&!g.fires.includes(s.target))back(s);
     if(s.state==='go'){const reach=s.kind==='samu'?14:60;if(dist(s.x,s.y,s.target.x,s.target.y)<reach){s.state='work';s.t=0;s.path=[]}}
     if(s.state==='work'){s.t+=dt;
       if(s.kind==='samu'){if(s.t>2.5){g.wounded=g.wounded.filter(w=>w!==s.target);g.stats.evac++;back(s)}}
-      else{const f=s.target;if(!g.fires.includes(f)){back(s)}else{f.int-=.3*dt;s.jet={x:f.x,y:f.y}}}}
+      else{const f=s.target;if(!g.fires.includes(f))back(s);else{f.int-=.3*dt;s.jet={x:f.x,y:f.y}}}}
     if(s.state==='back'&&!s.path.length&&dist(s.x,s.y,s.base.x,s.base.y)<20)s.state='idle';
-    if(s.state==='go'&&!s.path.length&&dist(s.x,s.y,s.target.x,s.target.y)>(s.kind==='samu'?14:60)){s.stuckT=(s.stuckT||0)+dt;if(s.stuckT>1){s.stuckT=0;s.path=astar(s.x,s.y,s.target.x,s.target.y)||[{x:s.target.x,y:s.target.y}]}}
+    if(s.state==='go'&&!s.path.length&&s.target&&dist(s.x,s.y,s.target.x,s.target.y)>(s.kind==='samu'?14:60)){s.stuckT=(s.stuckT||0)+dt;if(s.stuckT>1){s.stuckT=0;s.path=astar(s.x,s.y,s.target.x,s.target.y)||[{x:s.target.x,y:s.target.y}]}}
     if(s.path.length){let n=0;forNear(s.x,s.y,20,a=>{if(a.side===CRO)n++});let slow=Math.max(.12,1-n*.07);for(const b of g.bars)if(dist(s.x,s.y,b.x,b.y)<b.r+12)slow=.08;
       const wp=s.path[0],dx=wp.x-s.x,dy=wp.y-s.y,d=Math.hypot(dx,dy),sp=88*slow*dt;
-      if(d<=sp+.5){s.x=wp.x;s.y=wp.y;s.path.shift()}else{s.x+=dx/d*sp;s.y+=dy/d*sp;s.dx+=(dx/d-s.dx)*.15;s.dy+=(dy/d-s.dy)*.15;const k=Math.hypot(s.dx,s.dy)||1;s.dx/=k;s.dy/=k}
-}}
-  function back(s){s.state='back';s.target=null;s.path=astar(s.x,s.y,s.base.x,s.base.y)||[]}
+      if(d<=sp+.5){s.x=wp.x;s.y=wp.y;s.path.shift()}else{s.x+=dx/d*sp;s.y+=dy/d*sp;s.dx+=(dx/d-s.dx)*.15;s.dy+=(dy/d-s.dy)*.15;const k=Math.hypot(s.dx,s.dy)||1;s.dx/=k;s.dy/=k}}}
 }
+/* --- circulation --- */
+function trafficPath(from,to){const prev=new Map([[from,-1]]);const q=[from];while(q.length){const n=q.shift();if(n===to)break;for(const m of NEIGH[n]){if(prev.has(m))continue;if(game.blockedEdges.has(ekey(n,m)))continue;prev.set(m,n);q.push(m)}}
+  if(!prev.has(to))return null;const out=[];for(let n=to;n!==from;n=prev.get(n))out.push(n);return out.reverse()}
+const BORDER_NODES=[];for(let j=0;j<NJ;j++)for(let i=0;i<NI;i++)if(i===0||j===0||i===COLS||j===ROWS)BORDER_NODES.push(nid(i,j));
+function spawnTraffic(anywhere){const g=game;const from=anywhere?((Math.random()*NI*NJ)|0):pick(BORDER_NODES);const to=pick(BORDER_NODES);if(from===to)return;
+  const path=trafficPath(from,to);if(!path||!path.length)return;const p=nodeXY(from);g.traffic.push({x:p.x,y:p.y,from,to:path.shift(),path,col:pick(CARCOL),stopT:0,dead:false,ang:0,acc:false})}
+function updateTraffic(dt){const g=game;const target=Math.round(55*(1-.7*g.dark)+8);
+  if(g.traffic.length<target&&Math.random()<dt*3)spawnTraffic(false);
+  for(const c of g.traffic){const a=nodeXY(c.from),b=nodeXY(c.to);const dx=b.x-a.x,dy=b.y-a.y,L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L;const ox=-uy*11,oy=ux*11;
+    const tx=b.x+ox-ux*14,ty=b.y+oy-uy*14;c.ang=Math.atan2(uy,ux);
+    // obstacles devant : piétons, barrières, barricades, autres voitures
+    const fx=c.x+ux*15,fy=c.y+uy*15;let stop=false,crowdBlock=false;
+    forNear(fx,fy,10,q=>{stop=true;if(q.side===CRO)crowdBlock=true});
+    for(const o of g.bars)if(dist(fx,fy,o.x,o.y)<o.r+6)stop=true;
+    for(const o of g.closures)if(o.installed&&dist(fx,fy,o.x,o.y)<18)stop=true;
+    for(const o of g.traffic)if(o!==c&&!o.dead&&Math.abs(o.ang-c.ang)<.3&&dist(fx,fy,o.x,o.y)<12)stop=true;
+    if(stop){c.stopT+=dt;
+      if(crowdBlock&&g.phase==='action'&&c.stopT>3&&!c.acc&&routeDist(c.x,c.y)<70&&Math.random()<dt*.02){c.acc=true;g.stats.accidents++;(g.accLog=g.accLog||[]).push({x:c.x,y:c.y,from:c.from,to:c.to});let hurt=0;forNear(fx,fy,16,q=>{if(q.side===CRO&&hurt<2){wound(q,'renversé par une voiture');hurt++}});
+        shiftOp(.6*g.wit);addNews('s',null,'Un automobiliste force le passage du cortège : '+hurt+' blessé(s). Rue mal bouclée ?',c.x,c.y)}
+      if(c.stopT>10){c.stopT=0;const nf=c.to;c.to=c.from;c.from=nf;c.path=trafficPath(c.to,pick(BORDER_NODES))||[];c.x+=ox*-2;c.y+=oy*-2}
+      continue}
+    c.stopT=0;const d=dist(c.x,c.y,tx,ty),sp=75*dt;
+    if(d<=sp){c.from=c.to;if(!c.path.length){if(BORDER_NODES.includes(c.from)){c.dead=true;continue}c.path=trafficPath(c.from,pick(BORDER_NODES))||[];if(!c.path.length){c.dead=true;continue}}
+      const nx=c.path.shift();if(g.blockedEdges.has(ekey(c.from,nx))){c.path=trafficPath(c.from,pick(BORDER_NODES))||[];if(!c.path.length){c.dead=true;continue}c.to=c.path.shift()}else c.to=nx}
+    else{c.x+=(tx-c.x)/d*sp;c.y+=(ty-c.y)/d*sp}}
+  g.traffic=g.traffic.filter(c=>!c.dead)}
 const TIME_EVENTS=[
-  [6,'w','06:00 · Le jour se lève. Relève des équipes de police.',14],
-  [8,'w','Il fait jour : les passants envahissent les trottoirs.'],
-  [12,'c','Pause de midi : les cortèges grossissent.'],
-  [14,'p','14:00 · Relève : des compagnies fraîches arrivent.',12],
-  [17.5,'c','Sortie des bureaux : la foule afflue.'],
+  [12,'w','Pause de midi : terrasses pleines, beaucoup de passants.'],
+  [14.5,'w','Les grands magasins sont bondés de clients.'],
+  [17.5,'c','Sortie des bureaux : du monde rejoint le cortège.'],
   [18.5,'w','Le soleil se couche sur Paris.'],
-  [20.5,'w','Nuit noire. La foule fond, mais ceux qui restent se durcissent.'],
-  [22,'p','22:00 · Relève de nuit.',12],
+  [20.5,'w','Nuit noire : des groupes de casseurs sont signalés en périphérie.'],
   [2,'w','Il est 2 heures : les rues se vident.'],
 ];
 function timeEvents(h){const g=game,q=Math.floor(h*2)/2;if(g.lastHalf===null){g.lastHalf=q;return}if(q===g.lastHalf)return;g.lastHalf=q;
-  for(const[th,k,txt,res]of TIME_EVENTS)if(q===th){addNews(k,null,txt);if(res)g.reserve+=res}}
-function updateCivilians(dt){const g=game;const target=Math.round(70*(1-g.dark)+5);
-  if(g.civ.length<target&&Math.random()<dt*4){const i=(Math.random()*(COLS+1))|0,j=(Math.random()*(ROWS+1))|0;const p=findFree(X(i)+rand(-25,25),X(j)+rand(-25,25));
-    g.civ.push({x:p.x,y:p.y,path:null,panic:0,fx:0,fy:0,col:pick(PASSERS),wait:0})}
+  for(const[th,k,txt]of TIME_EVENTS)if(q===th)addNews(k,null,txt)}
+function updateCivilians(dt){const g=game;const target=Math.round(130*(1-g.dark)+15);
+  if(g.civ.length<target&&Math.random()<dt*5)spawnCiv(false);
   if(g.civ.length>target&&Math.random()<dt*2)g.civ.shift();
-  let budget=2;
-  for(const p of g.civ){let vx=0,vy=0;
+  let budget=3;const opps=g.agents.filter(a=>!a.dead&&a.squad.role==='opportuniste').length;
+  for(const p of g.civ){if(p.dead)continue;let vx=0,vy=0;
     if(p.panic>0){p.panic-=dt;vx=p.fx*70;vy=p.fy*70}
     else{if(!p.path||!p.path.length){p.wait-=dt;if(p.wait<=0&&budget>0){budget--;const i=(Math.random()*(COLS+1))|0,j=(Math.random()*(ROWS+1))|0;p.path=astar(p.x,p.y,X(i)+rand(-28,28),X(j)+rand(-28,28))||[];p.wait=1+Math.random()*4}}
       else{const wp=p.path[0],dx=wp.x-p.x,dy=wp.y-p.y,d=Math.hypot(dx,dy);if(d<6)p.path.shift();else{vx=dx/d*28;vy=dy/d*28}}
-      if(Math.random()<dt*.5){const c=nearest(p.x,p.y,45,CRO,isHostile);if(c){const dx=p.x-c.x,dy=p.y-c.y,d=Math.hypot(dx,dy)||1;p.panic=2;p.fx=dx/d;p.fy=dy/d}}}
-    moveAgent(p,vx*dt,vy*dt)}
-}
-function nearLandmark(x,y){for(const l of game.landmarks)if(dist(x,y,l.x,l.y)<LR*1.3)return l.name;return null}
+      if(Math.random()<dt*.5){const c=nearest(p.x,p.y,45,CRO,isHostile);if(c){const dx=p.x-c.x,dy=p.y-c.y,d=Math.hypot(dx,dy)||1;p.panic=2;p.fx=dx/d;p.fy=dy/d}}
+      // des citoyens lambdas se joignent aux violences
+      if(g.phase==='action'&&opps<90&&Math.random()<dt*.004*(1+2*g.dark)*g.df.opp*(g.op>55?1.6:1)){let trouble=g.fires.some(f=>dist(f.x,f.y,p.x,p.y)<140);
+        if(!trouble)trouble=countNear(p.x,p.y,90,CRO,isHostile)>=6;
+        if(trouble)joinRiot(p)}}
+    moveAgent(p,vx*dt,vy*dt)}}
+function joinRiot(p){const g=game;p.dead=true;g.stats.opp++;
+  let sq=null,bd=180;for(const s of g.squads)if(s.side===CRO&&(s.role==='opportuniste'||s.role==='casseur')){const d=dist(s.ax,s.ay,p.x,p.y);if(d<bd){bd=d;sq=s}}
+  if(!sq){sq=newSquad(CRO,p.x,p.y,null,'opportuniste');sq.stance='offensif';if(g.stats.opp<=1||Math.random()<.25)addNews('c',null,'Des passants se joignent aux violences.',p.x,p.y)}
+  addAgent(sq,p.x,p.y,p.col)}
+function nearSite(x,y,r){for(const s of game.sites)if(dist(x,y,s.x,s.y)<r)return s;return null}
 
-/* ================= IA ================= */
-const AI_WEIGHTS=[['CRS',3],['GM',3],['CI',2],['CSI',2],['BAC',1.4],['BRAVM',1.4],['PM',.8],['K9',.7]];
-function policeAI(){
-  const g=game,L=g.landmarks.filter(l=>!l.route);
-  for(const l of L){l.cN=countNear(l.x,l.y,240,CRO);l.pA=0}
-  const all=g.squads.filter(s=>s.side===POL);const pol=all.filter(s=>!s.isVeh);
-  for(let guard=0;guard<4;guard++){
-    let k=null;
-    if(g.reserve>=10&&g.bars.length>=2&&!all.some(s=>s.vt==='vbrg'))k='vbrg';
-    else if(g.reserve>=8&&!all.some(s=>s.vt==='eau')&&L.some(l=>l.cN>40))k='eau';
-    else if(g.reserve>=12&&g.dark>.5&&!all.some(s=>s.vt==='helico'))k='helico';
-    else if(pol.length<18){let tot=0;for(const[,w]of AI_WEIGHTS)tot+=w;let r=Math.random()*tot;for(const[u,w]of AI_WEIGHTS){r-=w;if(r<=0){k=u;break}}if(g.reserve<deployCost(k))k=null}
-    if(!k)break;const s=deployPolice(k,false);if(!s)break;all.push(s);if(!s.isVeh)pol.push(s);
-  }
-  // incidents : pillages et incendies → interpellations
-  const incidents=[];for(const s of g.squads)if(s.side===CRO&&s.task)incidents.push({x:s.task.obj.x,y:s.task.obj.y});for(const f of g.fires)incidents.push({x:f.x,y:f.y});
-  for(const inc of incidents){if(pol.some(s=>s.interv&&dist(s.interv.x,s.interv.y,inc.x,inc.y)<120))continue;
-    let best=null,bd=900;for(const s of pol){if(s.interv)continue;const pref=['BAC','BRAVM','CI','CSI','K9'].includes(s.ut);const d=dist(s.ax,s.ay,inc.x,inc.y)*(pref?.6:1.2);if(d<bd){bd=d;best=s}}
-    if(best){best.interv={x:inc.x,y:inc.y,t:25};order(best,inc.x+rand(-20,20),inc.y+rand(-20,20))}}
-  for(const sq of pol)if(sq.home&&!sq.interv)sq.home.pA+=sq.members.length;
-  for(const sq of pol){
-    if(sq.interv){sq.interv.t-=1.5;if(sq.interv.t<=0)sq.interv=null}
-    if(!sq.interv){
-      let best=sq.home,bs=-1e9;
-      for(const l of L){const own=(l===sq.home?sq.members.length:0);
-        const need=l.cN+(l.owner==='crowd'?22:0)+(l.ctrl>-100?10:0)-(l.pA-own)*1.4+6;
-        const s=need-dist(sq.ax,sq.ay,l.x,l.y)/(110*UT[sq.ut].speed)+(l===sq.home?8:0);if(s>bs){bs=s;best=l}}
-      let goPost=false;
-      if(sq.post&&!sq.home){const ps=14+countNear(sq.post.x,sq.post.y,150,CRO,isHostile)-dist(sq.ax,sq.ay,sq.post.x,sq.post.y)/220;if(ps>=bs)goPost=true}
-      if(goPost){if(dist(sq.ax,sq.ay,sq.post.x,sq.post.y)>50&&!sq.path.length)order(sq,sq.post.x,sq.post.y)}
-      else{if(best!==sq.home){if(sq.home)sq.home.pA-=sq.members.length;best.pA+=sq.members.length;sq.home=best}
-        const hl=sq.home;if(hl&&dist(sq.ax,sq.ay,hl.x,hl.y)>75&&(!sq.path.length||sq.goal!==hl)){order(sq,hl.x+rand(-35,35),hl.y+rand(-35,35));sq.goal=hl}}}
-    if(sq.gasCD<=0&&g.gasAmmo>0&&(has(sq,'cougar')||has(sq,'lacry'))){const c=centroidNear(sq.ax,sq.ay,gasRange(sq)*.62,CRO,isHostile);if(c.n>=8&&Math.random()<.6)fireGren(sq,'gas',c.x,c.y)}
-    if(sq.stunCD<=0&&has(sq,'assour')){const c=centroidNear(sq.ax,sq.ay,150,CRO,isHostile);if(c.n>=8&&Math.random()<.35)fireGren(sq,'stun',c.x,c.y)}
-    if(sq.lbdCD<=0&&has(sq,'lbd')){const t=nearest(sq.ax,sq.ay,160,CRO,a=>isHostile(a)&&a.panic<=0);if(t&&Math.random()<.5)fireLBD(sq,t.x,t.y)}
-    if(sq.smokeCD<=0&&has(sq,'fumi')){let hp=0;for(const a of sq.members)hp+=a.hp/UT[sq.ut].hp;if(hp/sq.members.length<.75){const c=centroidNear(sq.ax,sq.ay,200,CRO);if(c.n>4)fireGren(sq,'smoke',(c.x+sq.ax)/2,(c.y+sq.ay)/2)}}
-    if(sq.chargeCD<=0&&countNear(sq.ax,sq.ay,70,CRO,isHostile)>=6&&Math.random()<.35)charge(sq);
-  }
-  for(const v of all.filter(s=>s.isVeh)){
-    if(v.cargo){const s=unload(v);if(s)pol.push(s);continue}
-    let tgt=null;
-    if(v.vt==='vbrg'&&g.bars.length){let bd=1e9;for(const b of g.bars){const d=dist(v.ax,v.ay,b.x,b.y);if(d<bd){bd=d;tgt=b}}}
-    if(!tgt&&v.vt==='eau'&&g.fires.length){let bd=700;for(const f of g.fires){const d=dist(v.ax,v.ay,f.x,f.y);if(d<bd){bd=d;tgt=f}}}
-    if(!tgt){let bs=10;for(const l of L)if(l.cN>bs){bs=l.cN;tgt=l}}
-    if(!tgt&&v.post)tgt=v.post;
-    if(tgt&&dist(v.ax,v.ay,tgt.x,tgt.y)>60&&(!v.path.length||v.goal!==tgt)){order(v,tgt.x+rand(-40,40),tgt.y+rand(-40,40));v.goal=tgt}
-  }
-}
-function detachAI(dt){const g=game;g.detachT-=dt;if(g.detachT>0)return;g.detachT=(20+Math.random()*22)/g.df.cass/(.7+.6*g.dark);
-  const cands=g.squads.filter(s=>s.side===CRO&&s.role==='cortege'&&!s.dispersing&&s.members.length>=20&&countNear(s.ax,s.ay,150,POL)<8);
-  if(!cands.length){const nCass=g.squads.filter(s=>s.role==='casseur').length;if((g.dark>.4||!g.sc.march)&&nCass<6&&g.player!=='crowd'){const k=(Math.random()*CROWD_SPAWNS.length)|0,sp=CROWD_SPAWNS[k];const n=Math.round(8+Math.random()*7*g.df.cass);const ns=spawnSquad(CRO,sp.x,sp.y,n,null,'casseur');ns.stance='offensif';giveTask(ns,Math.random()<.55?'loot':'burn');addNews('c',null,'Un groupe de '+n+' casseurs entre dans Paris par '+SPAWN_NAMES[k]+'.',sp.x,sp.y)}return}
-  const s=pick(cands);const n=Math.round(8+Math.random()*8*g.df.cass);const ns=splitSquad(s,n,'casseur');
-  if(ns){if(Math.random()<.85)addNews('c',null,'Un groupe de '+n+' casseurs se détache du cortège.',ns.ax,ns.ay);if(g.player!=='crowd')giveTask(ns,Math.random()<.6?'loot':'burn')}}
+/* ================= IA DE LA FOULE ================= */
 function crowdAI(){
-  const g=game,L=g.landmarks.filter(l=>!l.route);
-  detachAI(2);
-  for(const l of L){l.pN=countNear(l.x,l.y,200,POL);l.gA=0}
-  let groups=g.squads.filter(s=>s.side===CRO);
-  for(const s of groups){if(s.members.length<5&&s.role!=='cortege'){let best=null,bd=500;for(const o of groups)if(o!==s&&o.members.length>=5&&o.role===s.role){const d=dist(s.ax,s.ay,o.ax,o.ay);if(d<bd){bd=d;best=o}}
-    if(best){for(const a of s.members){a.squad=best;best.members.push(a)}s.members=[];s.dead=true}}}
-  groups=groups.filter(s=>!s.dead);
-  for(const s of groups)if(s.goal)s.goal.gA++;
-  for(const s of groups){
+  const g=game;
+  const groups=g.squads.filter(s=>s.side===CRO);
+  // les black blocs se regroupent quand ils se croisent
+  for(const s of groups){if(s.dead||s.role!=='casseur'||s.follow)continue;for(const o of groups){if(o===s||o.dead||o.role!=='casseur'||o.follow)continue;if(dist(s.ax,s.ay,o.ax,o.ay)<60){mergeInto(o,s)}}}
+  for(const s of groups){if(s.dead)continue;
     const pn=countNear(s.ax,s.ay,140,POL);
-    if(s.role==='cortege'){// le cortège défile ; il ne se durcit que s'il est bloqué ou gazé
+    if(s.role==='cortege'){
       if(pn===0&&s.stance==='offensif'&&Math.random()<.2)s.stance='paisible';
       if(s.follow&&s.blockT>6&&pn>=6&&Math.random()<.2&&s.stance==='paisible'&&!s.sitin){s.sitin=true;s.follow=false;addNews('c',null,'Sit-in du cortège face au barrage de police.',s.ax,s.ay)}
       if(s.sitin&&pn<3&&Math.random()<.3){s.sitin=false;followRoute(s)}
-      if(s.callCD<=0&&g.op>=50&&Math.random()<.2)callFriends(s);
+      // un groupe se détache du cortège
+      if(s.follow&&!s.dispersing&&s.members.length>=24&&Math.random()<.012*g.df.opp*(1+g.dark)&&pn<6){const ns=splitSquad(s,10,'casseur');if(ns){addNews('c',null,'Des manifestants se masquent et quittent le cortège.',ns.ax,ns.ay);giveTask(ns,pick(['loot','burn']))}}
       continue}
     if(s.role==='casseur'){
-      if(pn>=8&&Math.random()<.5){s.stance='offensif';s.task=null}
-      if(pn>=14&&Math.random()<.3){// repli dans le cortège le plus proche
-        const c=groups.find(o=>o.role==='cortege'&&!o.dispersing&&dist(o.ax,o.ay,s.ax,s.ay)<500);if(c){order(s,c.ax,c.ay);s.task=null;s.rejoin=c}}
-      if(s.rejoin&&!s.rejoin.dead&&dist(s.ax,s.ay,s.rejoin.ax,s.rejoin.ay)<40){for(const a of s.members){a.squad=s.rejoin;s.rejoin.members.push(a)}s.members=[];s.dead=true;continue}
-      if(!s.task&&!s.path.length){const r=Math.random();
-        if(r<.45)giveTask(s,'loot');else if(r<.8)giveTask(s,'burn');
-        else{let best=null,bs=-1e9;for(const l of L){if(l.owner==='crowd')continue;const sc=-dist(s.ax,s.ay,l.x,l.y)/250-l.pN*.25+Math.random()*2;if(sc>bs){bs=sc;best=l}}if(best){s.goal=best;order(s,best.x,best.y)}}}
-      if(s.barCD<=0&&pn>=4&&Math.random()<.15*g.df.agg){const p=nearest(s.ax,s.ay,200,POL);if(p){const d=dist(s.ax,s.ay,p.x,p.y)||1;buildBarricade(s,s.ax+(p.x-s.ax)/d*40,s.ay+(p.y-s.ay)/d*40)}}
+      if(s.follow){// en tête de cortège : ils guettent le bon moment pour partir
+        if(!s.waitT&&g.t>g.actionAt+20){s.stance=pn>=10?'offensif':'paisible';let p=.06;const ns=nearSite(s.ax,s.ay,900);if(ns&&!ns.breached)p+=.06;if(pn<6)p+=.05;
+          if(Math.random()<p){s.follow=false;s.hidden=false;s.stance='offensif';s.path=[];addNews('c',null,'Le black bloc quitte la tête du cortège ('+s.members.length+' individus).',s.ax,s.ay);chooseCasseurGoal(s)}}
+        continue}
+      if(pn>=8&&Math.random()<.5){s.stance='offensif'}
+      if(pn>=16&&Math.random()<.3){const c=groups.find(o=>o.role==='cortege'&&!o.dispersing&&!o.dead&&dist(o.ax,o.ay,s.ax,s.ay)<500);if(c){order(s,c.ax,c.ay);s.task=null;s.rejoin=c}}
+      if(s.rejoin&&!s.rejoin.dead&&dist(s.ax,s.ay,s.rejoin.ax,s.rejoin.ay)<40){for(const a of s.members){a.col=pick(SHIRTS);}mergeInto(s,s.rejoin);continue}
+      if(s.siteGoal&&!s.siteGoal.breached&&!s.path.length&&dist(s.ax,s.ay,s.siteGoal.x,s.siteGoal.y)>200)order(s,s.siteGoal.x+rand(-120,120),s.siteGoal.y+rand(-120,120));
+      if(s.siteGoal&&s.siteGoal.breached)s.siteGoal=null;
+      if(!s.task&&!s.path.length&&!s.siteGoal)chooseCasseurGoal(s);
+      if(s.barCD<=0&&pn>=4&&Math.random()<.15){const p=nearest(s.ax,s.ay,200,POL);if(p){const d=dist(s.ax,s.ay,p.x,p.y)||1;buildBarricade(s,s.ax+(p.x-s.ax)/d*40,s.ay+(p.y-s.ay)/d*40)}}
       continue}
-    // rassemblements (manifestation sauvage, fin de cortège)
-    s.goalT-=2;
-    if(pn>=3&&Math.random()<(.25+.45*g.dark)*g.df.agg)s.stance='offensif';else if(pn===0&&Math.random()<.3)s.stance='paisible';
-    const gl=s.goal;
-    if(!gl||s.goalT<=0||(gl.owner==='crowd'&&gl.gA>1&&Math.random()<.5)){
-      const orphan=L.find(l=>l.owner==='crowd'&&l.gA===0);let best=null,bs=-1e9;
-      if(orphan&&Math.random()<.7)best=orphan;
-      else for(const l of L){if(l.owner==='crowd')continue;const sc=-dist(s.ax,s.ay,l.x,l.y)/230-l.pN*.22+(l.ctrl>-100?4:0)+Math.min(l.gA,2)*2+Math.random()*2.5;if(sc>bs){bs=sc;best=l}}
-      if(best&&best!==gl){if(gl)gl.gA--;best.gA++;s.goal=best;order(s,best.x+rand(-30,30),best.y+rand(-30,30))}
-      s.goalT=20+Math.random()*20;
-    }else if(gl&&!s.path.length&&dist(s.ax,s.ay,gl.x,gl.y)>70&&!s.sitin)order(s,gl.x+rand(-30,30),gl.y+rand(-30,30));
-    const at=gl&&dist(s.ax,s.ay,gl.x,gl.y)<80;
-    if(at&&pn>=3&&s.stance==='paisible'&&!s.sitin&&Math.random()<.25+.2*(1-g.dark))s.sitin=true;
-    if(s.sitin&&pn===0&&Math.random()<.2)s.sitin=false;
-    if(at&&s.barCD<=0&&Math.random()<(.1+.25*g.dark)*g.df.agg){const p=nearest(s.ax,s.ay,260,POL);if(p){const d=dist(s.ax,s.ay,p.x,p.y)||1;buildBarricade(s,s.ax+(p.x-s.ax)/d*45,s.ay+(p.y-s.ay)/d*45)}}
-    if(s.callCD<=0&&g.op>=45&&Math.random()<.5)callFriends(s);
+    if(s.role==='opportuniste'){
+      if(pn>=5&&Math.random()<.5){const p=nearest(s.ax,s.ay,140,POL);if(p){const dx=s.ax-p.x,dy=s.ay-p.y,d=Math.hypot(dx,dy)||1;order(s,s.ax+dx/d*250,s.ay+dy/d*250);s.task=null}}
+      else if(!s.task&&!s.path.length)giveTask(s,Math.random()<.75?'loot':'burn');
+      continue}
+    // rassemblements nocturnes / fin de cortège
+    if(pn>=3&&Math.random()<.25+.45*g.dark)s.stance='offensif';else if(pn===0&&Math.random()<.3)s.stance='paisible';
+    if(!s.task&&!s.path.length){if(Math.random()<.5)giveTask(s,pick(['loot','burn']));else{const t=pick(g.sites.filter(x=>!x.breached&&x.type==='mag'));if(t)order(s,t.x+rand(-140,140),t.y+rand(-140,140))}}
+  }
+  // la nuit, des bandes arrivent de l'extérieur
+  g.detachT-=2;if(g.detachT<=0){g.detachT=(40+Math.random()*40)/g.df.opp;
+    if(g.dark>.5&&g.squads.filter(s=>s.role==='casseur'&&!s.follow).length<6){const sp=pick(EDGE_SPAWNS);const s=spawnSquad(CRO,sp.x,sp.y,Math.round(g.df.cassSize*.8),null,'casseur');s.stance='offensif';chooseCasseurGoal(s);addNews('c',null,'Une bande de casseurs entre dans Paris.',sp.x,sp.y)}}
+}
+function chooseCasseurGoal(s){const g=game;const r=Math.random();
+  const weak=g.sites.filter(x=>!x.breached&&(x.type==='mag'||s.members.length>=24)).map(x=>({x,score:-dist(s.ax,s.ay,x.x,x.y)/400-countNear(x.x,x.y,200,POL)/6+(x.type==='mag'?1:0)+Math.random()})).sort((a,b)=>b.score-a.score);
+  if(r<.4&&weak.length){s.siteGoal=weak[0].x;s.task=null;order(s,s.siteGoal.x+rand(-130,130),s.siteGoal.y+rand(-130,130));return}
+  if(r<.75&&giveTask(s,'loot'))return;
+  if(giveTask(s,'burn'))return;
+  const p=nearest(s.ax,s.ay,500,POL);if(p)order(s,p.x+rand(-60,60),p.y+rand(-60,60))}
+
+/* ================= IA POLICE (démo du menu) ================= */
+function policeAI(){
+  const g=game;if(g.phase!=='action')return;
+  const pol=g.squads.filter(s=>s.side===POL&&!s.isVeh);
+  const incidents=[];for(const s of g.squads)if(s.side===CRO&&(s.task||s.siteGoal||(s.role==='casseur'&&!s.follow)))incidents.push({x:s.ax,y:s.ay});for(const f of g.fires)incidents.push({x:f.x,y:f.y});
+  for(const st of g.sites)if(st.hc>=6)incidents.push({x:st.x,y:st.y,big:true});
+  for(const inc of incidents){if(pol.filter(s=>s.interv&&dist(s.interv.x,s.interv.y,inc.x,inc.y)<150).length>=(inc.big?2:1))continue;
+    let best=null,bd=1100;for(const s of pol){if(s.interv||s.mission==='bouclage')continue;if(s.mission==='garde'&&dist(s.ax,s.ay,inc.x,inc.y)>350)continue;const pref=['BAC','BRAVM','CI','CSI','K9'].includes(s.ut);const d=dist(s.ax,s.ay,inc.x,inc.y)*(pref?.6:1.1);if(d<bd){bd=d;best=s}}
+    if(best){best.interv={x:inc.x,y:inc.y,t:25};order(best,inc.x+rand(-20,20),inc.y+rand(-20,20))}}
+  for(const sq of pol){
+    if(sq.interv){sq.interv.t-=1.5;if(sq.interv.t<=0)sq.interv=null}
+    if(!sq.interv&&sq.post&&dist(sq.ax,sq.ay,sq.post.x,sq.post.y)>50&&!sq.path.length)order(sq,sq.post.x,sq.post.y);
+    if(sq.gasCD<=0&&g.gasAmmo>0&&(has(sq,'cougar')||has(sq,'lacry'))){const c=centroidNear(sq.ax,sq.ay,gasRange(sq)*.62,CRO,isHostile);if(c.n>=8&&Math.random()<.6)fireGren(sq,'gas',c.x,c.y)}
+    if(sq.stunCD<=0&&has(sq,'assour')){const c=centroidNear(sq.ax,sq.ay,150,CRO,isHostile);if(c.n>=8&&Math.random()<.35)fireGren(sq,'stun',c.x,c.y)}
+    if(sq.lbdCD<=0&&has(sq,'lbd')){const t=nearest(sq.ax,sq.ay,160,CRO,a=>isHostile(a)&&a.panic<=0);if(t&&Math.random()<.5)fireLBD(sq,t.x,t.y)}
+    if(sq.chargeCD<=0&&countNear(sq.ax,sq.ay,70,CRO,isHostile)>=6&&Math.random()<.35)charge(sq);
+  }
+  for(const v of g.squads.filter(s=>s.isVeh)){
+    if(v.cargo||v.closuresQ.length)continue;let tgt=null;
+    if(v.vt==='vbrg'&&g.bars.length){let bd=1e9;for(const b of g.bars){const d=dist(v.ax,v.ay,b.x,b.y);if(d<bd){bd=d;tgt=b}}}
+    if(!tgt&&(v.vt==='eau'||v.vt==='helico')){let bs=8;for(const st of g.sites)if(st.hc>bs){bs=st.hc;tgt=st}if(!tgt&&g.fires.length&&v.vt==='eau')tgt=g.fires[0]}
+    if(!tgt)tgt=v.post;
+    if(tgt&&dist(v.ax,v.ay,tgt.x,tgt.y)>60&&(!v.path.length||v.goal!==tgt)){order(v,tgt.x+rand(-40,40),tgt.y+rand(-40,40));v.goal=tgt}
   }
 }
+
+/* ================= FIN & BILAN ================= */
+function scoreOf(){const g=game,s=g.stats;
+  let sc=100-g.damage/60000-s.civInj*3-s.wrongArr*4-s.crowdInjPeace*1.5-(s.crowdInj-s.crowdInjPeace)*.3-s.polInj*.4-s.magLost*20-s.accidents*3-s.civGassed*.3+Math.min(15,s.arrCass*.12)-s.arrPeace*.2-(g.op>60?(g.op-60)*.8:0);
+  return Math.round(clamp(sc,0,100))}
 function checkEnd(){
-  const g=game;if(g.over||!g.player)return;
-  const lc=g.landmarks.filter(l=>!l.route&&l.owner==='crowd').length;
-  const nc=g.agents.filter(a=>!a.dead&&a.side===CRO).length,np=g.agents.filter(a=>!a.dead&&a.side===POL).length;
-  let w=null,why='';const endH=clock(g.span);
-  if(lc===4){w='crowd';why='La foule tient les 4 lieux sensibles.'}
-  else if(g.damage>=g.df.dmg){w='crowd';why='Paris a subi '+fmtEUR(g.damage)+' de dégâts : le préfet est limogé.'}
-  else if(nc===0&&g.pendingCrowd<14&&g.t>30){w='police';why='Les derniers manifestants sont rentrés chez eux.'}
-  else if(np===0&&g.reserve<4&&!g.squads.some(s=>s.isVeh&&s.cargo)){w='crowd';why='Il ne reste plus un seul policier debout dans les rues.'}
-  else if(g.t>=g.span){w=lc>=3?'crowd':'police';why=lc>=3?'À '+endH+', la foule tient '+lc+' lieux sensibles sur 4.':'À '+endH+', la police tient '+(4-lc)+' lieux sensibles sur 4, avec '+fmtEUR(g.damage)+' de dégâts.'}
-  if(w&&typeof endGame==='function')endGame(w,why);
+  const g=game;if(g.over||g.demo)return;
+  if(g.damage>=g.df.dmg){endGame('defeat','Les dégâts atteignent '+fmtEUR(g.damage)+'. Le préfet est relevé de ses fonctions.');return}
+  if(g.t>=g.end){if(g.op>=80)endGame('defeat','L\'opinion s\'est massivement retournée contre la police : crise politique.');else endGame('win','La manifestation est terminée.')}
 }
+function endGame(res,why){const g=game;if(g.over)return;g.over=true;g.result=res;g.why=why;if(typeof window!=='undefined'&&window.showEnd)window.showEnd()}
 
 /* ================= RENDU DE LA VILLE ================= */
 function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
@@ -867,31 +938,33 @@ function drawCity(gx,lx){
         gx.fillStyle='#b05a48';for(let k=0;k<3;k++)gx.fillRect(bx+6+R()*(w-14),by+6+R()*(h-14),4,3);
         lx.fillStyle='rgba(255,215,140,.75)';for(let k=0;k<7;k++)lx.fillRect(bx+4+R()*(w-8),by+4+R()*(h-8),2,2);
       }}
+    else if(t==='site'){const s=SITES.find(d=>d.c===c&&d.r===r);
+      if(s.type==='inst'){gx.fillStyle='#d8cfbc';gx.fillRect(x,y,B,B);gx.fillStyle='#6f7a90';gx.fillRect(x+14,y+14,B-28,B-28);gx.fillStyle='#b8b09c';gx.fillRect(x+40,y+40,B-80,B-80);gx.fillStyle='#5a8a52';gx.fillRect(x+52,y+52,B-104,B-104);
+        gx.fillStyle='#002395';gx.fillRect(x+B/2-12,y+20,8,14);gx.fillStyle='#fff';gx.fillRect(x+B/2-4,y+20,8,14);gx.fillStyle='#ed2939';gx.fillRect(x+B/2+4,y+20,8,14)}
+      else{gx.fillStyle='#c8bca0';gx.fillRect(x,y,B,B);gx.fillStyle='#a49880';gx.fillRect(x+10,y+10,B-20,B-20);gx.fillStyle='rgba(200,230,255,.55)';for(let i=0;i<5;i++)for(let j=0;j<5;j++)gx.fillRect(x+24+i*38,y+24+j*38,22,22);
+        gx.fillStyle='#c62828';gx.fillRect(x,y+B-16,B,10)}
+      lx.fillStyle='rgba(255,230,170,.55)';for(let k=0;k<30;k++)lx.fillRect(x+10+R()*(B-20),y+10+R()*(B-20),3,3)}
     else if(t==='park'){gx.fillStyle='#5a8a52';gx.fillRect(x,y,B,B);gx.strokeStyle='#c8b890';gx.lineWidth=6;gx.beginPath();gx.moveTo(x,y);gx.lineTo(x+B,y+B);gx.moveTo(x+B,y);gx.lineTo(x,y+B);gx.stroke();
       for(let k=0;k<38;k++){const tx=x+10+R()*(B-20),ty=y+10+R()*(B-20),tr=6+R()*8;gx.fillStyle='#3f6e3c';gx.beginPath();gx.arc(tx,ty,tr,0,7);gx.fill();gx.fillStyle='rgba(170,230,150,.25)';gx.beginPath();gx.arc(tx-2,ty-2,tr*.6,0,7);gx.fill()}}
     else if(t==='plaza'){gx.fillStyle='#a8a296';gx.fillRect(x,y,B,B);gx.strokeStyle='rgba(0,0,0,.08)';gx.lineWidth=1;
       for(let k=0;k<B;k+=14){gx.beginPath();gx.moveTo(x+k,y);gx.lineTo(x+k,y+B);gx.moveTo(x,y+k);gx.lineTo(x+B,y+k);gx.stroke()}
-      const l=LANDMARK_DEFS.find(d=>d.c===c&&d.r===r);drawMonument(gx,x+B/2,y+B/2,l.kind)}
+      const l=PLAZAS.find(d=>d.c===c&&d.r===r);drawMonument(gx,x+B/2,y+B/2,l.kind)}
   }
   gx.fillStyle='#3a6a86';gx.fillRect(0,WY0,W,WY1-WY0);
-  gx.strokeStyle='rgba(200,230,250,.18)';gx.lineWidth=1.5;for(let k=0;k<260;k++){const x=R()*W,y=WY0+6+R()*(WY1-WY0-12);gx.beginPath();gx.moveTo(x,y);gx.lineTo(x+10+R()*20,y);gx.stroke()}
+  gx.strokeStyle='rgba(200,230,250,.18)';gx.lineWidth=1.5;for(let k=0;k<340;k++){const x=R()*W,y=WY0+6+R()*(WY1-WY0-12);gx.beginPath();gx.moveTo(x,y);gx.lineTo(x+10+R()*20,y);gx.stroke()}
   gx.fillStyle='#b8b0a0';gx.fillRect(0,WY0-3,W,3);gx.fillRect(0,WY1,W,3);
-  gx.fillStyle='#2a2f44';rr(gx,620,WY0+40,120,26,10);gx.fill();gx.fillStyle='#a0703a';gx.fillRect(640,WY0+46,60,14);
+  for(const bx of[620,1700]){gx.fillStyle='#2a2f44';rr(gx,bx,WY0+40,120,26,10);gx.fill();gx.fillStyle='#a0703a';gx.fillRect(bx+20,WY0+46,60,14)}
   for(const b of BRIDGES){const x=b*P;gx.fillStyle='#8f897c';gx.fillRect(x,WY0-4,S,WY1-WY0+8);gx.fillStyle='#575a66';gx.fillRect(x+7,WY0-4,S-14,WY1-WY0+8);gx.fillStyle='#d0c8b8';gx.fillRect(x+2,WY0-4,3,WY1-WY0+8);gx.fillRect(x+S-5,WY0-4,3,WY1-WY0+8)}
-  // hôpitaux et casernes
   gx.font='bold 9px Arial';gx.textAlign='center';
   for(const hp of HOSPITALS){gx.fillStyle='#fff';gx.fillRect(hp.x-9,hp.y-9,18,18);gx.fillStyle='#d72a2a';gx.fillRect(hp.x-2.5,hp.y-7,5,14);gx.fillRect(hp.x-7,hp.y-2.5,14,5);gx.fillStyle='#fff';gx.fillText(hp.name.toUpperCase(),hp.x,hp.y+19)}
   for(const c of CASERNES){gx.fillStyle='#c62828';gx.fillRect(c.x-9,c.y-9,18,18);gx.fillStyle='#ffd23f';gx.beginPath();gx.moveTo(c.x,c.y-6);gx.lineTo(c.x+5,c.y+5);gx.lineTo(c.x-5,c.y+5);gx.fill();gx.fillStyle='#fff';gx.fillText('POMPIERS',c.x,c.y+19)}
+  for(const k in BASES){const b=BASES[k];gx.fillStyle='#1b2a6a';gx.fillRect(b.x-11,b.y-9,22,18);gx.fillStyle='#fff';gx.font='bold 8px Arial';gx.fillText(b.ic,b.x,b.y+3);gx.font='bold 9px Arial';gx.fillText(b.name.toUpperCase(),b.x+(b.x<40?50:0),b.y+20)}
   for(let i=0;i<=COLS;i++)for(let j=0;j<=ROWS;j++)for(const[ox,oy]of[[-4,-4],[S+4,-4],[-4,S+4],[S+4,S+4]]){const x=i*P+ox,y=j*P+oy;
     const gr=lx.createRadialGradient(x,y,0,x,y,46);gr.addColorStop(0,'rgba(255,214,140,.22)');gr.addColorStop(1,'rgba(255,214,140,0)');lx.fillStyle=gr;lx.fillRect(x-46,y-46,92,92)}
 }
 function drawMonument(g,x,y,kind){
   g.save();
-  if(kind==='opera'){g.fillStyle='#d8cfb8';g.fillRect(x-38,y-30,76,60);g.fillStyle='#ede4d0';g.fillRect(x-38,y-30,76,5);g.fillStyle='#5fa896';g.beginPath();g.arc(x,y,20,0,7);g.fill();g.fillStyle='#d4b45a';g.beginPath();g.arc(x,y,4,0,7);g.fill()}
-  else if(kind==='pyramid'){g.fillStyle='#d0c6b0';g.fillRect(x-80,y-80,160,22);g.fillRect(x-80,y-80,22,160);g.fillRect(x+58,y-80,22,160);g.fillStyle='#a8cce8';g.beginPath();g.moveTo(x,y-26);g.lineTo(x+26,y+20);g.lineTo(x-26,y+20);g.closePath();g.fill();g.strokeStyle='#f0f8ff';g.lineWidth=1;g.stroke()}
-  else if(kind==='hall'){g.fillStyle='#d8cfbc';g.fillRect(x-50,y-34,100,68);g.fillStyle='#7d8aa0';g.fillRect(x-40,y-24,80,48);g.fillStyle='#d8cfbc';g.fillRect(x-6,y-24,12,48)}
-  else if(kind==='column'){g.strokeStyle='rgba(0,0,0,.15)';g.lineWidth=3;g.beginPath();g.arc(x,y,60,0,7);g.stroke();g.fillStyle='#5a8a52';g.beginPath();g.arc(x,y,24,0,7);g.fill();g.fillStyle='#d8d0b8';g.beginPath();g.arc(x,y,9,0,7);g.fill();g.fillStyle='#d8b84a';g.beginPath();g.arc(x,y,4,0,7);g.fill()}
-  else if(kind==='dome'){g.fillStyle='#d0c8b4';g.fillRect(x-36,y-46,72,92);g.fillStyle='#e0d8c4';g.beginPath();g.arc(x,y,24,0,7);g.fill();g.fillStyle='#a8a090';g.beginPath();g.arc(x,y,12,0,7);g.fill()}
+  if(kind==='column'){g.strokeStyle='rgba(0,0,0,.15)';g.lineWidth=3;g.beginPath();g.arc(x,y,60,0,7);g.stroke();g.fillStyle='#5a8a52';g.beginPath();g.arc(x,y,24,0,7);g.fill();g.fillStyle='#d8d0b8';g.beginPath();g.arc(x,y,9,0,7);g.fill();g.fillStyle='#d8b84a';g.beginPath();g.arc(x,y,4,0,7);g.fill()}
   else{g.fillStyle='#5a8a52';g.beginPath();g.arc(x,y,40,0,7);g.fill();g.fillStyle='#4a8ab0';g.beginPath();g.arc(x,y,18,0,7);g.fill();g.fillStyle='#dee';g.beginPath();g.arc(x,y,4,0,7);g.fill()}
   g.restore();
 }
@@ -904,7 +977,7 @@ const mm=document.getElementById('mm'),mx=mm.getContext('2d');
 const city=document.createElement('canvas');city.width=W;city.height=H;
 const lights=document.createElement('canvas');lights.width=W;lights.height=H;
 drawCity(city.getContext('2d'),lights.getContext('2d'));
-const MMW=230,MMH=Math.round(MMW*H/W);mm.width=MMW;mm.height=MMH;
+const MMW=240,MMH=Math.round(MMW*H/W);mm.width=MMW;mm.height=MMH;
 const cityMini=document.createElement('canvas');cityMini.width=MMW;cityMini.height=MMH;cityMini.getContext('2d').drawImage(city,0,0,MMW,MMH);
 let dpr=1,vw=0,vh=0;const cam={x:0,y:0,z:.6};
 function resize(){dpr=window.devicePixelRatio||1;vw=innerWidth;vh=innerHeight;cv.width=vw*dpr;cv.height=vh*dpr;clampCam()}
@@ -915,28 +988,25 @@ window.__view=(x,y,z)=>{cam.z=z;centerOn(x,y)};
 const toWorld=(sx,sy)=>({x:cam.x+sx/cam.z,y:cam.y+sy/cam.z});
 const $=id=>document.getElementById(id);
 const hud=$('hud'),menu=$('menu'),end=$('end');
-let menuDur=15,menuScen='jour',menuDiff='facile',mode='menu',lastSide='police',selSig='';
-$('scens').innerHTML=Object.entries(SCEN).map(([k,s])=>`<button data-s="${k}" class="${k===menuScen?'on':''}"><b>${s.name}</b><span>${s.hours}${s.march?' · cortège':''}</span></button>`).join('');
-document.querySelectorAll('#scens button').forEach(b=>b.onclick=()=>{menuScen=b.dataset.s;document.querySelectorAll('#scens button').forEach(x=>x.classList.toggle('on',x===b));demo()});
+let menuDur=20,menuScen='jour',menuDiff='facile',mode='menu',selSig='';
+$('scens').innerHTML=Object.entries(SCEN).map(([k,s])=>`<button data-s="${k}" class="${k===menuScen?'on':''}">${s.name}<small>${s.hours}</small></button>`).join('');
+document.querySelectorAll('#scens button').forEach(b=>b.onclick=()=>{menuScen=b.dataset.s;document.querySelectorAll('#scens button').forEach(x=>x.classList.toggle('on',x===b))});
 document.querySelectorAll('#durs button').forEach(b=>b.onclick=()=>{menuDur=+b.dataset.d;document.querySelectorAll('#durs button').forEach(x=>x.classList.toggle('on',x===b))});
 document.querySelectorAll('#diffs button').forEach(b=>b.onclick=()=>{menuDiff=b.dataset.k;document.querySelectorAll('#diffs button').forEach(x=>x.classList.toggle('on',x===b))});
-document.querySelectorAll('.side').forEach(b=>b.onclick=()=>start(b.dataset.side));
-function demo(){newGame(null,menuScen,8,'normal');game.speed=2;cam.z=.55;centerOn(W*.6,H*.45)}
+$('startBtn').onclick=start;
+function demo(){newGame(true,'jour',6,'normal');game.speed=2;cam.z=.5;centerOn(W*.6,H*.4)}
 demo();
-$('again').onclick=()=>start(lastSide);
+$('again').onclick=start;
 $('toMenu').onclick=()=>{end.classList.add('hide');hud.classList.add('hide');menu.classList.remove('hide');mode='menu';demo()};
-function start(side){lastSide=side;mode='play';newGame(side,menuScen,menuDur,menuDiff);menu.classList.add('hide');end.classList.add('hide');hud.classList.remove('hide');
-  cam.z=Math.max(.55,Math.min(vw/W,vh/H)*1.25);$('endAt').textContent='fin '+clock(game.span);$('dmgM').textContent=fmtEUR(game.df.dmg);
-  if(side==='crowd'){game.sel=[game.squads.find(q=>q.side===CRO)];centerOn(ROUTE[0].x-200,ROUTE[0].y+250)}else centerOn(W*.55,H*.45);
-  selSig='';buildDeploy()}
-window.endGame=function(w,why){const g=game;g.over=true;mode='end';const won=w===g.player;
-  $('endTitle').textContent=(won?'VICTOIRE — ':'DÉFAITE — ')+(w==='crowd'?'LA FOULE':'LA POLICE');
-  $('endTitle').style.color=w==='crowd'?'#ff5a55':'#6f95ff';
-  const eh=hourAt(Math.min(g.t,g.span));
-  $('endKicker').textContent=clock(Math.min(g.t,g.span))+(g.t>=g.span?(eh>=5&&eh<9?" · L'AUBE SE LÈVE SUR PARIS":' · FIN DU SCÉNARIO'):' · FIN ANTICIPÉE');
-  $('endText').textContent=why+' Opinion finale : '+Math.round(g.op)+' % pour la foule.';
-  const lc=g.landmarks.filter(l=>!l.route&&l.owner==='crowd').length;
-  $('endStats').innerHTML=`<div>LIEUX FOULE<b>${lc} / 4</b></div><div>DÉGÂTS<b>${fmtEUR(g.damage)}</b></div><div>ARRESTATIONS<b>${g.stats.arrests}</b></div><div>COMMERCES PILLÉS<b>${g.stats.looted}</b></div><div>VOITURES BRÛLÉES<b>${g.stats.carsBurnt}</b></div><div>FEUX ÉTEINTS<b>${g.stats.firesOut}</b></div><div>POLICIERS BLESSÉS<b>${g.stats.polInj}</b></div><div>MANIFS BLESSÉS<b>${g.stats.crowdInj}</b></div><div>ÉVACUÉS SAMU<b>${g.stats.evac}</b></div>`;
+function start(){mode='play';newGame(false,menuScen,menuDur,menuDiff);menu.classList.add('hide');end.classList.add('hide');hud.classList.remove('hide');
+  cam.z=Math.max(.45,Math.min(vw/W,vh/H)*1.15);centerOn(W*.5,H*.45);$('endAt').textContent='fin '+clock(game.end);$('dmgM').textContent=fmtEUR(game.df.dmg);selSig='';buildDeploy()}
+window.showEnd=function(){const g=game;mode='end';const win=g.result==='win';const sc=scoreOf();const grade=!win?'—':sc>=85?'A':sc>=70?'B':sc>=55?'C':sc>=40?'D':'E';
+  $('endGrade').textContent=grade;$('endGrade').style.color=win?'#ffd23f':'#ff5a55';
+  $('endTitle').textContent=win?'MISSION ACCOMPLIE':'ÉCHEC DU DISPOSITIF';$('endTitle').style.color=win?'#6f95ff':'#ff5a55';
+  $('endKicker').textContent='BILAN · '+clock(Math.min(g.t,g.end));
+  $('endText').textContent=g.why+(win?' Note du dispositif : '+sc+'/100.':'')+' Soutien de l\'opinion à la police : '+Math.round(100-g.op)+' %.';
+  const s=g.stats;
+  $('endStats').innerHTML=`<div>DÉGÂTS<b>${fmtEUR(g.damage)}</b></div><div>SITES PILLÉS<b>${s.magLost}</b></div><div>INTERPELLATIONS<b>${s.arrests}</b></div><div>DONT VIOLENTS<b>${s.arrCass}</b></div><div>CIVILS BLESSÉS<b>${s.civInj}</b></div><div>ERREURS D'INTERPELLATION<b>${s.wrongArr}</b></div><div>PASSANTS GAZÉS<b>${s.civGassed}</b></div><div>MANIFS PACIFIQUES BLESSÉS<b>${s.crowdInjPeace}</b></div><div>POLICIERS BLESSÉS<b>${s.polInj}</b></div><div>COMMERCES PILLÉS<b>${s.looted}</b></div><div>VOITURES BRÛLÉES<b>${s.carsBurnt}</b></div><div>ACCIDENTS DE CIRCULATION<b>${s.accidents}</b></div><div>PASSANTS DEVENUS ÉMEUTIERS<b>${s.opp}</b></div><div>FEUX ÉTEINTS<b>${s.firesOut}</b></div><div>ÉVACUÉS SAMU<b>${s.evac}</b></div>`;
   end.classList.remove('hide')};
 
 /* --- actions --- */
@@ -952,106 +1022,104 @@ const PACTS=[
   {k:'N',id:'barrier',l:'BARRIÈRE',ok:s=>s.vt==='fourgonCRS'},
   {k:'J',id:'water',l:"JET D'EAU",ok:s=>s.vt==='eau'},
   {k:'X',id:'all',l:'TOUT',ok:()=>true,always:true}];
-const CACTS=[{k:'T',id:'stance',l:'OFFENSIF'},{k:'H',id:'sitin',l:'SIT-IN'},{k:'B',id:'bar',l:'BARRICADE'},{k:'F',id:'call',l:'APPELER DES AMIS'},{k:'E',id:'detach',l:'DÉTACHER UN GROUPE'},{k:'P',id:'loot',l:'PILLER'},{k:'I',id:'burn',l:'INCENDIER'},{k:'R',id:'route',l:'REPRENDRE LE PARCOURS'},{k:'X',id:'all',l:'TOUT'}];
-function curActs(){const g=game;if(g.player==='crowd')return CACTS;if(g.phase==='setup')return[{k:'⏎',id:'launch',l:'LANCER LA JOURNÉE ▶',go:true},{k:'A',id:'auto',l:'PLACEMENT AUTO'},{k:'Suppr',id:'remove',l:'RETIRER'},{k:'X',id:'all',l:'TOUT'}];
+function curActs(){const g=game;
+  if(g.phase==='prep')return[{k:'⏎',id:'validate',l:'VALIDER LE PLAN ▶',go:true},{k:'A',id:'auto',l:'PLAN AUTOMATIQUE'},{k:'Suppr',id:'remove',l:'RETIRER L\'UNITÉ'},{k:'B',id:'allClos',l:'TOUS LES BOUCLAGES'},{k:'',id:'noClos',l:'AUCUN BOUCLAGE'}];
   const sel=g.sel.filter(s=>s.side===POL);return PACTS.filter(a=>a.always||sel.some(a.ok))}
-function buildActions(){const box=$('actions');box.innerHTML='';for(const a of curActs()){const b=document.createElement('button');b.dataset.id=a.id;if(a.go)b.className='go';b.innerHTML=`<span>${a.l}</span><kbd>${a.k}</kbd>`;b.onclick=()=>act(a.id);box.appendChild(b)}}
-function buildDeploy(){const d=$('deploy');if(game.player!=='police'){d.classList.add('hide');return}d.classList.remove('hide');
-  d.innerHTML='<div class="lab" id="resLab">RÉSERVE</div>'+DEPLOY.map(([k,key])=>{const u=UT[k],v=VT[k];const col=u?(u.helm==='ski'?'#e8e8ee':u.helm):v.body;const br=u&&u.stripe?u.stripe:'#000';
-    const label=u?u.name:k==='eau'?'CANON À EAU':k==='vbrg'?'VBRG':'HÉLICO';
-    return`<button data-k="${k}" title="${u?u.full+' ('+u.n+') · '+u.weap.map(w=>WNAME[w]).join(', '):v.name}"><span class="dot" style="background:${col};border:2px solid ${br}"></span>${label}${u?' <small>×'+u.n+'</small>':''} <i>${deployCost(k)}</i><kbd>${key}</kbd></button>`}).join('');
-  d.querySelectorAll('button').forEach(b=>b.onclick=()=>doDeploy(b.dataset.k))}
-function doDeploy(k){const g=game;if(mode!=='play')return;
-  if(g.phase==='setup'){if(g.setupPts<deployCost(k))return;g.placing=g.placing===k?null:k;return}
-  if(g.deployCD>0)return;const s=deployPolice(k,true);
-  if(!s){if(k==='helico'&&g.squads.some(q=>q.vt==='helico'))addNews('w',null,'Un seul hélicoptère disponible.');return}
-  g.sel=[s];addNews('p',null,(s.isVeh?s.name.split(' · ')[0].toLowerCase():UT[k].full)+(s.cargo?' en route avec '+s.cargo.n+' '+UT[s.cargo.ut].name:'')+' : renfort parti de la préfecture.',s.ax,s.ay)}
+function buildActions(){const box=$('actions');box.innerHTML='';for(const a of curActs()){const b=document.createElement('button');b.dataset.id=a.id;if(a.go)b.className='go';b.innerHTML=`<span>${a.l}</span>${a.k?`<kbd>${a.k}</kbd>`:''}`;b.onclick=()=>act(a.id);box.appendChild(b)}}
+function buildDeploy(){const d=$('deploy');const g=game;
+  if(g.phase==='prep'){d.classList.remove('hide');
+    d.innerHTML='<div class="lab">FORCES DU SECTEUR · cliquez une unité puis la carte</div>'+ROSTER_ORDER.filter(k=>g.df.roster[k]>0).map(k=>{const u=UT[k],v=VT[k];const col=u?(u.helm==='ski'?'#e8e8ee':u.helm==='cap'?'#1b2440':u.helm):v.body;const br=u&&u.stripe?u.stripe:u&&u.helm==='cap'?'#fff':'#000';
+      const label=u?u.name:k==='eau'?'CANON À EAU':k==='vbrg'?'VBRG':'HÉLICO';
+      return`<button data-k="${k}" title="${u?u.full+' ('+u.n+') · '+u.weap.map(w=>WNAME[w]).join(', '):v.name}"><span class="dot" style="background:${col};border:2px solid ${br}"></span>${label}${u?' <small>×'+u.n+'</small>':''} <i class="cnt"></i></button>`}).join('');
+    d.querySelectorAll('button').forEach(b=>b.onclick=()=>{g.placing=g.placing===b.dataset.k?null:b.dataset.k})}
+  else if(g.phase==='action'||g.phase==='setup'){d.classList.remove('hide');d.innerHTML='<div class="lab" id="resLab"></div><button id="reinfBtn">DEMANDER DES RENFORTS À LA PRÉFECTURE <i></i></button>';$('reinfBtn').onclick=()=>requestReinf()}
+}
 let mouse={x:0,y:0};
-function act(id){const g=game;if(!g||g.over||mode!=='play')return;const mySide=g.player==='police'?POL:CRO;const sel=g.sel.filter(s=>s.side===mySide);const mw=toWorld(mouse.x,mouse.y);
-  if(id==='all'){g.sel=g.squads.filter(s=>s.side===mySide);return}
-  if(id==='launch'){launchDay();selSig='';return}
-  if(id==='auto'){for(const s of g.squads.filter(q=>q.side===POL))removeUnit(s);autoPlace(g.setupPts);g.sel=[];return}
-  if(id==='remove'){sel.forEach(removeUnit);g.sel=[];return}
+function act(id){const g=game;if(!g||g.over||mode!=='play')return;const sel=g.sel.filter(s=>s.side===POL);
+  if(id==='validate'){if(!g.plan.length){addNews('w',null,'Placez au moins une unité avant de valider.');return}startSetup(false);selSig='';buildDeploy();return}
+  if(id==='auto'){autoPlan();return}
+  if(id==='remove'){if(g.selMarker)removeMarker(g.selMarker);return}
+  if(id==='allClos'){g.closures.forEach(c=>c.on=true);return}
+  if(id==='noClos'){g.closures.forEach(c=>c.on=false);return}
+  if(id==='all'){g.sel=g.squads.filter(s=>s.side===POL);return}
   if(!sel.length)return;
   if(['gas','lbd','stun','smoke'].includes(id)){g.targeting=g.targeting===id?null:id;return}
   if(id==='charge')sel.forEach(charge);
-  else if(id==='hold')sel.forEach(s=>{s.path.length=0;s.follow=false;s.task=null});
+  else if(id==='hold')sel.forEach(s=>{s.path.length=0;s.closuresQ&&(s.closuresQ.length=0);s.dest=null});
   else if(id==='unload'){const out=[];sel.forEach(s=>{const q=unload(s);if(q)out.push(q)});if(out.length)g.sel=out}
   else if(id==='embark'){const vs=[];sel.forEach(s=>{const v=embark(s);if(v)vs.push(v)});if(vs.length)g.sel=vs;else addNews('w',null,'Aucun véhicule vide assez proche pour embarquer.')}
   else if(id==='barrier')sel.forEach(placeBarrier);
   else if(id==='water')sel.forEach(s=>{if(s.vt==='eau')s.water=!s.water});
-  else if(id==='stance'){const off=!sel.every(s=>s.stance==='offensif');sel.forEach(s=>{s.stance=off?'offensif':'paisible';if(off)s.sitin=false})}
-  else if(id==='sitin'){const on=!sel.every(s=>s.sitin);sel.forEach(s=>{s.sitin=on;if(on){s.stance='paisible';s.path.length=0;s.follow=false}})}
-  else if(id==='bar')sel.forEach(s=>{const d=dist(s.ax,s.ay,mw.x,mw.y)||1;if(d<120)buildBarricade(s,mw.x,mw.y);else buildBarricade(s,s.ax+(mw.x-s.ax)/d*40,s.ay+(mw.y-s.ay)/d*40)});
-  else if(id==='call')sel.forEach(callFriends);
-  else if(id==='detach'){const out=[];sel.forEach(s=>{const n=Math.min(14,Math.floor(s.members.length/3));if(n>=5){const ns=splitSquad(s,n,'casseur');if(ns)out.push(ns)}});if(out.length)g.sel=out;else addNews('w',null,'Groupe trop petit pour se diviser.')}
-  else if(id==='loot'||id==='burn'){let ok=false;sel.forEach(s=>{if(giveTask(s,id))ok=true});if(!ok)addNews('w',null,id==='loot'?'Aucun commerce intact à proximité.':'Rien à incendier à proximité.')}
-  else if(id==='route'){if(!g.sc.march){addNews('w',null,'Pas de parcours déclaré dans ce scénario.');return}sel.forEach(s=>{s.role==='cortege'||(s.role='cortege');followRoute(s)})}
 }
 function castTarget(w,shift){const g=game,kind=g.targeting;
   const ok={gas:s=>(has(s,'cougar')||has(s,'lacry'))&&s.gasCD<=0,stun:s=>has(s,'assour')&&s.stunCD<=0,smoke:s=>has(s,'fumi')&&s.smokeCD<=0,lbd:s=>has(s,'lbd')&&s.lbdCD<=0}[kind];
   const sel=g.sel.filter(s=>s.side===POL&&ok(s)).sort((a,b)=>dist(a.ax,a.ay,w.x,w.y)-dist(b.ax,b.ay,w.x,w.y));
-  if(!sel.length){addNews('w',null,'Aucune unité sélectionnée prête pour ce tir.');}
+  if(!sel.length){addNews('w',null,'Aucune unité sélectionnée prête pour ce tir.')}
   else if(kind==='lbd'){const r=fireLBD(sel[0],w.x,w.y);if(r==='range')addNews('w',null,'LBD : cible hors de portée (170).');else if(!r)addNews('w',null,'LBD : aucune cible à cet endroit.')}
   else fireGren(sel[0],kind,w.x,w.y);
   if(!shift)g.targeting=null}
 /* --- souris --- */
 let drag=null,pan=null;
 cv.addEventListener('contextmenu',e=>e.preventDefault());
-cv.addEventListener('mousedown',e=>{mouse={x:e.clientX,y:e.clientY};if(mode!=='play')return;const g=game;
+cv.addEventListener('mousedown',e=>{mouse={x:e.clientX,y:e.clientY};if(mode!=='play')return;const g=game;const w=toWorld(e.clientX,e.clientY);
   if(e.button===1){pan={x:e.clientX,y:e.clientY,cx:cam.x,cy:cam.y};e.preventDefault();return}
-  if(e.button===2){if(g.targeting||g.placing){g.targeting=null;g.placing=null;return}
-    const w=toWorld(e.clientX,e.clientY);const mySide=g.player==='police'?POL:CRO;const sel=g.sel.filter(s=>s.side===mySide);
+  if(g.phase==='prep'){
+    if(e.button===2){if(g.placing){g.placing=null;return}if(g.selMarker){const m=g.selMarker;const p=VT[m.k]&&VT[m.k].air?w:findFree(w.x,w.y);m.x=p.x;m.y=p.y;m.mission=missionAt(m.k,m.x,m.y)}return}
+    if(g.placing){const m=addMarker(g.placing,w.x,w.y);if(m)g.selMarker=m;if(!e.shiftKey||!(g.roster[g.placing]>0))g.placing=null;return}
+    const m=g.plan.find(q=>dist(q.x,q.y,w.x,w.y)<18/Math.min(1,cam.z));if(m){g.selMarker=m;return}
+    const c=g.closures.find(q=>dist(q.x,q.y,w.x,w.y)<16/Math.min(1,cam.z));if(c){c.on=!c.on;return}
+    g.selMarker=null;return}
+  if(e.button===2){if(g.targeting){g.targeting=null;return}
+    const sel=g.sel.filter(s=>s.side===POL);
     sel.forEach((s,i)=>{const n=sel.length,cols=Math.ceil(Math.sqrt(n)),ox=(i%cols-(cols-1)/2)*45,oy=(((i/cols)|0)-(Math.ceil(n/cols)-1)/2)*45;
-      if(g.phase==='setup')teleport(s,w.x+ox,w.y+oy);else{order(s,w.x+ox,w.y+oy);s.goal=null;s.follow=false;s.task=null;s.post=null}});
+      if(s.closuresQ)s.closuresQ.length=0;if(s.isVeh&&s.cargo)s.dest={x:w.x+ox,y:w.y+oy};order(s,w.x+ox,w.y+oy);s.post={x:w.x+ox,y:w.y+oy};s.mission=missionAt(s.ut||s.vt,w.x+ox,w.y+oy)});
     if(sel.length)g.fx.push({x:w.x,y:w.y,t:0,kind:'order'});return}
-  if(e.button===0){const w=toWorld(e.clientX,e.clientY);
-    if(g.placing){const s=placeUnit(g.placing,w.x,w.y);if(s)g.sel=[s];if(!e.shiftKey||g.setupPts<deployCost(g.placing))g.placing=null;return}
-    if(g.targeting){castTarget(w,e.shiftKey);return}
+  if(e.button===0){if(g.targeting){castTarget(w,e.shiftKey);return}
     drag={x0:e.clientX,y0:e.clientY,x1:e.clientX,y1:e.clientY,shift:e.shiftKey}}});
 addEventListener('mousemove',e=>{mouse={x:e.clientX,y:e.clientY};if(drag){drag.x1=e.clientX;drag.y1=e.clientY}
   if(pan){cam.x=pan.cx-(e.clientX-pan.x)/cam.z;cam.y=pan.cy-(e.clientY-pan.y)/cam.z;clampCam()}});
-addEventListener('mouseup',e=>{if(e.button===1)pan=null;if(e.button!==0||!drag)return;const g=game;const mySide=g.player==='police'?POL:CRO;
+addEventListener('mouseup',e=>{if(e.button===1)pan=null;if(e.button!==0||!drag)return;const g=game;
   const a=toWorld(Math.min(drag.x0,drag.x1),Math.min(drag.y0,drag.y1)),b=toWorld(Math.max(drag.x0,drag.x1),Math.max(drag.y0,drag.y1));
   let picked=[];
   if(Math.abs(drag.x1-drag.x0)+Math.abs(drag.y1-drag.y0)<6){const w=toWorld(drag.x1,drag.y1);
-    const v=g.squads.find(s=>s.isVeh&&s.side===mySide&&dist(s.ax,s.ay,w.x,w.y)<Math.max(18,12/cam.z));
+    const v=g.squads.find(s=>s.isVeh&&dist(s.ax,s.ay,w.x,w.y)<Math.max(18,12/cam.z));
     if(v)picked=[v];else{let best=null,bd=(14/cam.z)**2;
-      for(const ag of g.agents){if(ag.dead||ag.side!==mySide)continue;const d=(ag.x-w.x)**2+(ag.y-w.y)**2;if(d<bd){bd=d;best=ag}}
+      for(const ag of g.agents){if(ag.dead||ag.side!==POL)continue;const d=(ag.x-w.x)**2+(ag.y-w.y)**2;if(d<bd){bd=d;best=ag}}
       if(best)picked=[best.squad]}}
-  else picked=g.squads.filter(s=>s.side===mySide&&(s.isVeh?(s.ax>=a.x&&s.ax<=b.x&&s.ay>=a.y&&s.ay<=b.y):s.members.some(m=>m.x>=a.x&&m.x<=b.x&&m.y>=a.y&&m.y<=b.y)));
+  else picked=g.squads.filter(s=>s.side===POL&&(s.isVeh?(s.ax>=a.x&&s.ax<=b.x&&s.ay>=a.y&&s.ay<=b.y):s.members.some(m=>m.x>=a.x&&m.x<=b.x&&m.y>=a.y&&m.y<=b.y)));
   g.sel=drag.shift?[...new Set([...g.sel,...picked])]:picked;drag=null});
 cv.addEventListener('wheel',e=>{e.preventDefault();const w=toWorld(e.clientX,e.clientY);cam.z=clamp(cam.z*(e.deltaY<0?1.12:1/1.12),Math.min(vw/W,vh/H)*.9,2.4);cam.x=w.x-e.clientX/cam.z;cam.y=w.y-e.clientY/cam.z;clampCam()},{passive:false});
 mm.addEventListener('mousedown',e=>{const r=mm.getBoundingClientRect();centerOn((e.clientX-r.left)/MMW*W,(e.clientY-r.top)/MMH*H);
   const mv=ev=>centerOn((ev.clientX-r.left)/MMW*W,(ev.clientY-r.top)/MMH*H);const up=()=>{removeEventListener('mousemove',mv);removeEventListener('mouseup',up)};addEventListener('mousemove',mv);addEventListener('mouseup',up)});
 $('news').addEventListener('click',e=>{const el=e.target.closest('.n');if(!el)return;const n=game.news[+el.dataset.i];if(n&&n.x!==undefined)centerOn(n.x,n.y)});
+$('siteBoxes').addEventListener('click',e=>{const el=e.target.closest('span');if(!el)return;const s=game.sites[+el.dataset.i];if(s)centerOn(s.x,s.y)});
 /* --- clavier --- */
 const keys={};
 addEventListener('keydown',e=>{const k=e.key.toLowerCase();keys[k]=true;if(mode!=='play')return;const g=game;
   if(k===' '){g.paused=!g.paused;e.preventDefault();return}
   if(k==='+'||k==='='){g.speed=g.speed>=3?1:g.speed+1;return}
-  if(k==='escape'){g.targeting=null;g.placing=null;g.sel=[];return}
-  if(k==='tab'){e.preventDefault();const mySide=g.player==='police'?POL:CRO;const own=g.squads.filter(s=>s.side===mySide);if(!own.length)return;const i=own.indexOf(g.sel[0]);const s=own[(i+1)%own.length];g.sel=[s];centerOn(s.ax,s.ay);return}
+  if(k==='escape'){g.targeting=null;g.placing=null;g.sel=[];g.selMarker=null;return}
+  if(g.phase==='prep'){if(k==='enter')act('validate');else if(k==='delete'||k==='backspace')act('remove');else if(k==='a')act('auto');else if(k==='b')act('allClos');return}
+  if(k==='tab'){e.preventDefault();const own=g.squads.filter(s=>s.side===POL);if(!own.length)return;const i=own.indexOf(g.sel[0]);const s=own[(i+1)%own.length];g.sel=[s];centerOn(s.ax,s.ay);return}
   if(e.ctrlKey||e.metaKey){if(k==='a'){e.preventDefault();act('all')}return}
-  if(g.phase==='setup'){if(k==='enter'){act('launch');return}if(k==='delete'||k==='backspace'){act('remove');return}if(k==='a'){act('auto');return}if(k==='x'){act('all');return}}
-  if(g.player==='police'){const d=DEPLOY.find(x=>x[1]===k);if(d){doDeploy(d[0]);return}}
-  const list=g.player==='crowd'?CACTS:g.phase==='setup'?[]:PACTS;const a=list.find(x=>x.k.toLowerCase()===k);if(a)act(a.id)});
+  const a=PACTS.find(x=>x.k.toLowerCase()===k);if(a)act(a.id)});
 addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false});
 
 /* --- boucle --- */
 let last=performance.now(),acc=0,hudT=0,mmT=0;
 function frame(now){const dtr=Math.min(.1,(now-last)/1000);last=now;
-  const pv=700/cam.z*dtr;
+  const pv=750/cam.z*dtr;
   if(mode==='play'){if(keys['arrowleft']||keys['q'])cam.x-=pv;if(keys['arrowright']||keys['d'])cam.x+=pv;if(keys['arrowup']||keys['z']||keys['w'])cam.y-=pv;if(keys['arrowdown']||keys['s'])cam.y+=pv;clampCam()}
-  if(mode==='menu'){cam.x+=12*dtr;if(cam.x>W-vw/cam.z-50)cam.x=-100;clampCam();if(game.t>game.span*.9)demo()}
+  if(mode==='menu'){cam.x+=12*dtr;if(cam.x>W-vw/cam.z-50)cam.x=-100;clampCam();if(game.t>game.end-10)demo()}
   if(mode!=='end'&&!game.paused){acc+=dtr*game.speed;let n=0;while(acc>=1/30&&n<8){step(1/30);acc-=1/30;n++}if(n>=8)acc=0}
   render();
   hudT-=dtr;if(hudT<=0&&mode==='play'){hudT=.2;updateHUD()}
-  mmT-=dtr;if(mmT<=0&&mode==='play'){mmT=.15;renderMini()}
+  mmT-=dtr;if(mmT<=0&&mode==='play'){mmT=.2;renderMini()}
   if(mode==='menu')$('menuClock').textContent='PARIS · '+clock(game.t);
   requestAnimationFrame(frame)}
 requestAnimationFrame(frame);
 
+function unitColor(k){const u=UT[k];if(u)return u.helm==='ski'?'#8a8a94':u.helm==='cap'?'#1b2440':u.helm;return VT[k].body}
 function drawFire(x,y,int,t,seed){const r=8+int*16;
   const gr=ctx.createRadialGradient(x,y,0,x,y,r*2.4);gr.addColorStop(0,`rgba(255,170,60,${.5*int})`);gr.addColorStop(1,'rgba(255,120,30,0)');ctx.fillStyle=gr;ctx.beginPath();ctx.arc(x,y,r*2.4,0,7);ctx.fill();
   for(let k=0;k<4;k++){const a=t*7+seed+k*1.7;ctx.fillStyle=k%2?'rgba(255,90,20,.85)':'rgba(255,210,80,.9)';ctx.beginPath();ctx.arc(x+Math.sin(a)*r*.35,y+Math.cos(a*1.3)*r*.3,r*(.35+.15*Math.sin(a*2)),0,7);ctx.fill()}
@@ -1082,6 +1150,7 @@ function drawVehicle(v,t,dark,sel){const V=VT[v.vt];ctx.save();
   if(v.cargo){ctx.fillStyle='#ffd23f';ctx.beginPath();ctx.arc(-L/2+4,0,2,0,7);ctx.fill()}
   if(dark>.3){ctx.fillStyle=`rgba(255,240,200,${.18*dark})`;ctx.beginPath();ctx.moveTo(L/2,-Wd/2+1);ctx.lineTo(L/2+40,-14);ctx.lineTo(L/2+40,14);ctx.lineTo(L/2,Wd/2-1);ctx.fill()}
   ctx.restore();
+  if(v.installT>0){ctx.strokeStyle='#ffd23f';ctx.lineWidth=3;ctx.beginPath();ctx.arc(v.ax,v.ay,16,-Math.PI/2,-Math.PI/2+v.installT/5*6.283);ctx.stroke()}
   if(v.hp<v.maxhp){ctx.fillStyle='#000';ctx.fillRect(v.ax-14,v.ay-16,28,3);ctx.fillStyle=v.hp/v.maxhp>.4?'#6f95ff':'#ff5a55';ctx.fillRect(v.ax-14,v.ay-16,28*v.hp/v.maxhp,3)}
   if(v.jet)drawJet(v.ax+v.dx*10,v.ay+v.dy*10,v.jet.x,v.jet.y);
 }
@@ -1089,8 +1158,7 @@ function drawJet(x0,y0,x1,y1){ctx.strokeStyle='rgba(190,225,255,.75)';ctx.lineWi
   ctx.fillStyle='rgba(200,230,255,.35)';for(let k=0;k<6;k++){ctx.beginPath();ctx.arc(x1+rand(-14,14),y1+rand(-14,14),3+Math.random()*4,0,7);ctx.fill()}}
 function drawSvc(s,t,dark){ctx.save();ctx.translate(s.x,s.y);ctx.rotate(Math.atan2(s.dy,s.dx));
   if(s.kind==='samu'){const L=22,Wd=11;ctx.fillStyle='rgba(0,0,0,.3)';ctx.fillRect(-L/2+2,-Wd/2+2,L,Wd);ctx.fillStyle='#f4f4f0';rr(ctx,-L/2,-Wd/2,L,Wd,2);ctx.fill();
-    ctx.fillStyle='#ffcc00';for(let k=0;k<5;k++)ctx.fillRect(-L/2+k*4.4,(k%2?-Wd/2:Wd/2-2),4.4,2);ctx.fillStyle='#2b6cd6';ctx.fillRect(-4,-Wd/2,8,1.2);
-    ctx.fillStyle='#d72a2a';ctx.fillRect(-2,-3,4,6);ctx.fillRect(-3,-2,6,4)}
+    ctx.fillStyle='#ffcc00';for(let k=0;k<5;k++)ctx.fillRect(-L/2+k*4.4,(k%2?-Wd/2:Wd/2-2),4.4,2);ctx.fillStyle='#d72a2a';ctx.fillRect(-2,-3,4,6);ctx.fillRect(-3,-2,6,4)}
   else{const L=32,Wd=13;ctx.fillStyle='rgba(0,0,0,.3)';ctx.fillRect(-L/2+2,-Wd/2+2,L,Wd);ctx.fillStyle='#c62828';rr(ctx,-L/2,-Wd/2,L,Wd,2);ctx.fill();
     ctx.fillStyle='#ddd';ctx.fillRect(-L/2+3,-2,L-12,1.2);ctx.fillRect(-L/2+3,1,L-12,1.2);for(let k=0;k<6;k++)ctx.fillRect(-L/2+4+k*3.5,-2,.8,4);ctx.fillStyle='#ffd23f';ctx.fillRect(-L/2,Wd/2-1.5,L,1.5)}
   const on=((t*7)|0)%2===0;if(s.state!=='idle'){ctx.fillStyle=on?'#3a7aff':'#223';ctx.fillRect(6,-3,2.5,2.5);ctx.fillStyle=on?'#223':'#3a7aff';ctx.fillRect(6,.5,2.5,2.5);
@@ -1101,7 +1169,8 @@ function drawPolice(a,sq,sel){const ut=UT[sq.ut],fx=sq.dx,fy=sq.dy,px=-fy,py=fx;
   if(sq.ut==='BRAVM'){const ang=Math.hypot(a.vx,a.vy)>5?Math.atan2(a.vy,a.vx):Math.atan2(fy,fx);ctx.save();ctx.translate(a.x,a.y);ctx.rotate(ang);ctx.fillStyle='#151820';ctx.fillRect(-6,-1.6,12,3.2);ctx.fillStyle='#ddd';ctx.fillRect(4.5,-1,1.5,2);ctx.fillStyle='#3a7aff';ctx.fillRect(-6,-1,1.2,2);ctx.restore()}
   if(a.dog){ctx.fillStyle='#8a5a2a';ctx.beginPath();ctx.ellipse(a.x+px*6+fx*2,a.y+py*6+fy*2,3,1.8,Math.atan2(fy,fx),0,7);ctx.fill();ctx.fillStyle='#5a3a1a';ctx.beginPath();ctx.arc(a.x+px*6+fx*5,a.y+py*6+fy*5,1.4,0,7);ctx.fill()}
   ctx.fillStyle=ut.body==='civil'?a.col:(sq.chargeT>0?'#2a3a8a':ut.body);ctx.beginPath();ctx.arc(a.x,a.y,4,0,7);ctx.fill();
-  ctx.fillStyle=ut.helm==='ski'?a.ski:ut.helm;ctx.beginPath();ctx.arc(a.x,a.y,2.3,0,7);ctx.fill();
+  if(ut.helm==='cap'){ctx.fillStyle='#10162e';ctx.beginPath();ctx.arc(a.x,a.y,2,0,7);ctx.fill();ctx.fillStyle='#e8e8ee';ctx.fillRect(a.x+fx*1.6-1.2,a.y+fy*1.6-1.2,2.4,2.4);ctx.fillStyle='#d8dde8';ctx.fillRect(a.x-px*3.3-.8,a.y-py*3.3-.8,1.6,1.6);ctx.fillRect(a.x+px*3.3-.8,a.y+py*3.3-.8,1.6,1.6)}
+  else{ctx.fillStyle=ut.helm==='ski'?a.ski:ut.helm;ctx.beginPath();ctx.arc(a.x,a.y,2.3,0,7);ctx.fill()}
   if(ut.helm==='ski'){ctx.fillStyle='#ff9a2a';ctx.fillRect(a.x+fx*1.6-1,a.y+fy*1.6-1,2,2)}
   if(sq.ut==='BRAVM'){ctx.fillStyle='#222';ctx.fillRect(a.x+fx*1.5-1,a.y+fy*1.5-1,2,2)}
   if(ut.stripe){ctx.strokeStyle=ut.stripe;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(a.x-fx*2.3,a.y-fy*2.3);ctx.lineTo(a.x+fx*2.3,a.y+fy*2.3);ctx.stroke()}
@@ -1113,36 +1182,43 @@ function render(){const g=game,z=cam.z,dark=g.dark;
   ctx.setTransform(dpr*z,0,0,dpr*z,-cam.x*z*dpr,-cam.y*z*dpr);
   ctx.drawImage(city,0,0);
   const t=performance.now()/1000;
-  // commerces et voitures (avant l'éclairage)
   for(const s of g.shops){const hz=s.side==='n'||s.side==='s';const w=hz?14:4,hh=hz?4:14;
     ctx.fillStyle=s.state==='burnt'?'#2a2622':s.col;ctx.fillRect(s.x-w/2,s.y-hh/2,w,hh);
     if(s.state==='looted'||s.state==='burnt'){ctx.fillStyle='#e8e8f0';for(let k=0;k<4;k++)ctx.fillRect(s.x-6+k*3.5+(hz?0:6),s.y+(hz?(s.side==='n'?4:-5):-6+k*3.5),1.5,1.5)}}
   for(const c of g.cars){ctx.save();ctx.translate(c.x,c.y);ctx.rotate(c.ang);ctx.fillStyle=c.state==='burnt'?'#26221e':c.col;rr(ctx,-7,-3.5,14,7,2);ctx.fill();
     if(c.state!=='burnt'){ctx.fillStyle='rgba(30,40,60,.75)';ctx.fillRect(1.5,-2.8,3,5.6);ctx.fillRect(-5,-2.8,2.2,5.6)}ctx.restore()}
+  for(const c of g.traffic){ctx.save();ctx.translate(c.x,c.y);ctx.rotate(c.ang);ctx.fillStyle=c.col;rr(ctx,-7.5,-3.6,15,7.2,2);ctx.fill();ctx.fillStyle='rgba(30,40,60,.8)';ctx.fillRect(1.8,-2.9,3,5.8);ctx.fillRect(-5,-2.9,2.2,5.8);
+    if(c.stopT>0){ctx.fillStyle='#ff3030';ctx.fillRect(-7.5,-3.4,1.2,1.6);ctx.fillRect(-7.5,1.8,1.2,1.6)}ctx.restore()}
   const h=hourAt(g.t);const dusk=(h>=17.5&&h<20.5)||(h>=5.5&&h<8)?Math.max(0,1-Math.abs(dark-.5)*2):0;
   if(dusk>0){ctx.fillStyle=`rgba(255,120,60,${.16*dusk})`;ctx.fillRect(0,0,W,H)}
-  if(dark>0){ctx.fillStyle=`rgba(6,10,38,${.66*dark})`;ctx.fillRect(0,0,W,H);ctx.globalCompositeOperation='lighter';ctx.globalAlpha=dark;ctx.drawImage(lights,0,0);ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over'}
-  // parcours déclaré
-  if(g.sc.march){ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle=g.phase==='setup'?'rgba(255,210,63,.32)':'rgba(255,210,63,.16)';ctx.lineWidth=46;ctx.beginPath();ctx.moveTo(ROUTE[0].x,ROUTE[0].y);for(const p of ROUTE)ctx.lineTo(p.x,p.y);ctx.stroke();
-    ctx.strokeStyle='rgba(255,210,63,.75)';ctx.lineWidth=2;ctx.setLineDash([10,10]);ctx.lineDashOffset=-t*20;ctx.stroke();ctx.setLineDash([]);ctx.lineDashOffset=0;ctx.lineCap='butt';
-    for(let k=1;k<10;k++){const p=routeAt(k/10),q=routeAt(k/10+.01);const an=Math.atan2(q.y-p.y,q.x-p.x);ctx.save();ctx.translate(p.x,p.y);ctx.rotate(an);ctx.fillStyle='rgba(255,210,63,.85)';ctx.beginPath();ctx.moveTo(8,0);ctx.lineTo(-5,-6);ctx.lineTo(-5,6);ctx.fill();ctx.restore()}}
-  for(const l of g.landmarks){if(l.route)continue;const col=l.owner==='crowd'?'#e53935':'#3f6cf0';
-    ctx.fillStyle=l.owner==='crowd'?'rgba(229,57,53,.09)':'rgba(63,108,240,.08)';ctx.beginPath();ctx.arc(l.x,l.y,LR,0,7);ctx.fill();
-    ctx.lineWidth=2;ctx.strokeStyle=col;ctx.globalAlpha=.7;ctx.beginPath();ctx.arc(l.x,l.y,LR,0,7);ctx.stroke();ctx.globalAlpha=1;
-    if(l.ctrl>-100&&l.ctrl<100){const f=(l.ctrl+100)/200;ctx.lineWidth=5;ctx.strokeStyle='#e53935';ctx.beginPath();ctx.arc(l.x,l.y,LR+5,-Math.PI/2,-Math.PI/2+f*6.283);ctx.stroke();
-      ctx.strokeStyle='#3f6cf0';ctx.beginPath();ctx.arc(l.x,l.y,LR+5,-Math.PI/2+f*6.283,1.5*Math.PI);ctx.stroke()}}
+  if(dark>0){ctx.fillStyle=`rgba(6,10,38,${.66*dark})`;ctx.fillRect(0,0,W,H);ctx.globalCompositeOperation='lighter';ctx.globalAlpha=dark;ctx.drawImage(lights,0,0);
+    for(const c of g.traffic){const fx=Math.cos(c.ang),fy=Math.sin(c.ang);ctx.fillStyle='rgba(255,240,190,.22)';ctx.beginPath();ctx.moveTo(c.x+fx*7,c.y+fy*7);ctx.lineTo(c.x+fx*36-fy*10,c.y+fy*36+fx*10);ctx.lineTo(c.x+fx*36+fy*10,c.y+fy*36-fx*10);ctx.fill()}
+    ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over'}
+  // parcours
+  ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle=g.phase==='prep'?'rgba(255,210,63,.32)':'rgba(255,210,63,.14)';ctx.lineWidth=46;ctx.beginPath();ctx.moveTo(ROUTE[0].x,ROUTE[0].y);for(const p of ROUTE)ctx.lineTo(p.x,p.y);ctx.stroke();
+  ctx.strokeStyle='rgba(255,210,63,.75)';ctx.lineWidth=2;ctx.setLineDash([10,10]);ctx.lineDashOffset=-t*20;ctx.stroke();ctx.setLineDash([]);ctx.lineDashOffset=0;ctx.lineCap='butt';
+  for(let k=1;k<10;k++){const p=routeAt(k/10),q=routeAt(k/10+.01);const an=Math.atan2(q.y-p.y,q.x-p.x);ctx.save();ctx.translate(p.x,p.y);ctx.rotate(an);ctx.fillStyle='rgba(255,210,63,.85)';ctx.beginPath();ctx.moveTo(8,0);ctx.lineTo(-5,-6);ctx.lineTo(-5,6);ctx.fill();ctx.restore()}
+  // sites sensibles
+  for(const s of g.sites){const col=s.breached?'#111':s.breach>0?'#ff9a3a':s.type==='inst'?'#3f6cf0':'#7a9ad0';
+    ctx.strokeStyle=col;ctx.lineWidth=s.breach>0?4:2.5;ctx.setLineDash(s.type==='mag'?[8,6]:[]);ctx.strokeRect(s.x-B/2-24,s.y-B/2-24,B+48,B+48);ctx.setLineDash([]);
+    if(s.breach>0&&!s.breached){ctx.fillStyle='#000';ctx.fillRect(s.x-60,s.y-B/2-36,120,6);ctx.fillStyle='#ff5a20';ctx.fillRect(s.x-60,s.y-B/2-36,120*s.breach,6)}
+    if(s.breached&&s.type==='mag'){for(let k=0;k<3;k++)drawFire(s.x-60+k*60,s.y-40+k*30,.7,t,k)}}
+  // bouclages
+  for(const c of g.closures){if(g.phase==='prep'||!c.installed){if(!c.on&&g.phase!=='prep')continue;ctx.strokeStyle=c.on?'#ffd23f':'rgba(255,255,255,.35)';ctx.lineWidth=2;ctx.setLineDash(c.on?[]:[3,3]);ctx.beginPath();ctx.arc(c.x,c.y,9,0,7);ctx.stroke();ctx.setLineDash([]);
+      if(c.on){ctx.fillStyle='rgba(255,210,63,.35)';ctx.fill();ctx.fillStyle='#111';ctx.font='bold 9px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('B',c.x,c.y+.5)}continue}
+    ctx.save();ctx.translate(c.x,c.y);ctx.rotate(c.ang+Math.PI/2);for(let k=-3;k<=3;k++){ctx.fillStyle=k%2?'#fff':'#d72a2a';ctx.fillRect(k*7-3.5,-2,7,4)}
+    ctx.fillStyle='#ff7a1a';for(const k of[-26,26]){ctx.beginPath();ctx.moveTo(k,-4);ctx.lineTo(k+3,3);ctx.lineTo(k-3,3);ctx.fill()}ctx.restore()}
   for(const b of g.bars){ctx.save();ctx.translate(b.x,b.y);
     const R=rng(b.seed|0);for(let k=0;k<9;k++){ctx.save();ctx.rotate(R()*6.28);ctx.fillStyle=pick2(R,['#7a5030','#5a5a66','#8a6a40','#3a3a44','#a03a30']);ctx.fillRect(-14+R()*14,-10+R()*8,12+R()*10,5+R()*4);ctx.restore()}
     ctx.restore();drawFire(b.x,b.y,.45,t,b.seed);ctx.fillStyle='#000';ctx.fillRect(b.x-14,b.y-20,28,3);ctx.fillStyle='#ffb040';ctx.fillRect(b.x-14,b.y-20,28*b.hp/100,3)}
   for(const b of g.barriers){ctx.strokeStyle='#c8ccd8';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(b.x0,b.y0);ctx.lineTo(b.x1,b.y1);ctx.stroke();ctx.strokeStyle='#d72a2a';ctx.setLineDash([5,5]);ctx.lineWidth=2;ctx.stroke();ctx.setLineDash([])}
-  for(const p of g.civ){ctx.fillStyle=p.panic>0?'#f0e0a0':p.col;ctx.beginPath();ctx.arc(p.x,p.y,2.7,0,7);ctx.fill()}
-  // blessés au sol
-  for(const w of g.wounded){const blink=w.crit&&((t*4)|0)%2;ctx.fillStyle=w.side===POL?'#1b2a5a':'#7a3a3a';ctx.beginPath();ctx.ellipse(w.x,w.y,5,2.5,.5,0,7);ctx.fill();
+  for(const p of g.civ){ctx.fillStyle=p.panic>0?'#f0e0a0':p.col;ctx.beginPath();ctx.arc(p.x,p.y,2.6,0,7);ctx.fill();ctx.fillStyle='rgba(0,0,0,.35)';ctx.beginPath();ctx.arc(p.x,p.y,1.1,0,7);ctx.fill()}
+  for(const w of g.wounded){const blink=w.crit&&((t*4)|0)%2;ctx.fillStyle=w.side===POL?'#1b2a5a':w.side==='civ'?'#9a9080':'#7a3a3a';ctx.beginPath();ctx.ellipse(w.x,w.y,5,2.5,.5,0,7);ctx.fill();
     ctx.fillStyle=blink?'#ff3030':'#fff';ctx.fillRect(w.x-1.2,w.y-9,2.4,6);ctx.fillRect(w.x-3,w.y-7.2,6,2.4);if(w.stable){ctx.strokeStyle='#4ac888';ctx.lineWidth=1;ctx.beginPath();ctx.arc(w.x,w.y,8,0,7);ctx.stroke()}}
   const selSet=new Set(g.sel);
   for(const a of g.agents){if(a.dead)continue;
-    if(a.side===CRO){if(selSet.has(a.squad)){ctx.strokeStyle='rgba(255,255,255,.75)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(a.x,a.y,5.5,0,7);ctx.stroke()}
-      ctx.fillStyle=a.squad.role==='casseur'?'#555':'#1a1418';ctx.beginPath();ctx.arc(a.x,a.y,3.9,0,7);ctx.fill();
+    if(a.side===CRO){const role=a.squad.role;
+      ctx.fillStyle=role==='casseur'?'#555':role==='opportuniste'?'#ff4a20':'#1a1418';ctx.beginPath();ctx.arc(a.x,a.y,3.9,0,7);ctx.fill();
       ctx.fillStyle=(a.panic>0||a.stun>0)&&(t*8|0)%2?'#fff3a0':a.col;ctx.beginPath();ctx.arc(a.x,a.y,3,0,7);ctx.fill();
       if(a.flag){ctx.strokeStyle='#ccc';ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(a.x+2,a.y);ctx.lineTo(a.x+2,a.y-11);ctx.stroke();ctx.fillStyle=a.flag;ctx.fillRect(a.x+2,a.y-11,8,5)}
       if(a.squad.sitin){ctx.fillStyle='rgba(255,255,255,.5)';ctx.fillRect(a.x-1,a.y-1,2,2)}}
@@ -1167,77 +1243,79 @@ function render(){const g=game,z=cam.z,dark=g.dark;
     else if(f.kind==='boom'){ctx.fillStyle='rgba(255,140,40,.7)';ctx.beginPath();ctx.arc(f.x,f.y,8+k*30,0,7);ctx.fill();ctx.fillStyle='rgba(60,60,60,.6)';ctx.beginPath();ctx.arc(f.x+k*10,f.y-k*20,6+k*25,0,7);ctx.fill()}
     ctx.globalAlpha=1}
   ctx.setLineDash([6,6]);ctx.lineWidth=1.5;
-  for(const s of g.sel){if(!s.path.length)continue;ctx.strokeStyle=s.side===POL?'rgba(140,170,255,.8)':'rgba(255,140,130,.8)';ctx.beginPath();ctx.moveTo(s.ax,s.ay);for(const p of s.path)ctx.lineTo(p.x,p.y);ctx.stroke()}
+  for(const s of g.sel){if(!s.path.length)continue;ctx.strokeStyle='rgba(140,170,255,.8)';ctx.beginPath();ctx.moveTo(s.ax,s.ay);for(const p of s.path)ctx.lineTo(p.x,p.y);ctx.stroke()}
   ctx.setLineDash([]);
   const fs=11/Math.max(z,.6);ctx.font=`700 ${fs}px Inter,Arial,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
-  for(const l of g.landmarks){const txt=l.name.toUpperCase()+(l.route&&g.sc.march?(l===g.landmarks[1]?' · DÉPART':l===g.landmarks[6]?' · ARRIVÉE':' · PARCOURS'):''),w=ctx.measureText(txt).width+12,y=l.y+LR*.62;
-    ctx.fillStyle=l.route?'#c99a00':l.owner==='crowd'?'#c62828':'#2b4fd6';ctx.fillRect(l.x-w/2,y-fs*.8,w,fs*1.6);ctx.fillStyle=l.route?'#111':'#fff';ctx.fillText(txt,l.x,y);
-    if(z>.45&&!l.route){const s2=`${l.pc} police · ${l.cc} manifs`;ctx.font=`500 ${fs*.85}px Inter,Arial`;const w2=ctx.measureText(s2).width+10;ctx.fillStyle='rgba(10,12,22,.85)';ctx.fillRect(l.x-w2/2,y+fs*.85,w2,fs*1.3);ctx.fillStyle='#ccd';ctx.fillText(s2,l.x,y+fs*1.5);ctx.font=`700 ${fs}px Inter,Arial,sans-serif`}}
-  const mySide=g.player==='police'?POL:g.player==='crowd'?CRO:-1;
-  if(z>.5)for(const s of g.squads){const enemyCass=s.side===CRO&&s.role==='casseur'&&mySide===POL;if(s.side!==mySide&&!selSet.has(s)&&!enemyCass)continue;
-    const txt=s.isVeh?s.name+(s.cargo?' · '+s.cargo.n+' '+UT[s.cargo.ut].name:''):s.name+(s.side===CRO?(s.sitin?' · SIT-IN':s.task?(s.task.kind==='loot'?' · PILLAGE':' · INCENDIE'):s.stance==='offensif'&&s.role!=='casseur'?' · OFFENSIF':''):'')+' · '+s.members.length;
-    ctx.font=`700 ${fs*.85}px Inter,Arial`;const w=ctx.measureText(txt).width+10,y=s.ay-26;ctx.fillStyle=s.side===POL?'rgba(43,79,214,.92)':s.role==='casseur'?'rgba(20,20,24,.92)':'rgba(198,40,40,.92)';ctx.fillRect(s.ax-w/2,y-fs*.6,w,fs*1.2);ctx.fillStyle='#fff';ctx.fillText(txt,s.ax,y)}
+  for(const l of PLAZAS){const c=blockCenter(l.c,l.r);const txt=(l.name+' · '+l.tag).toUpperCase(),w=ctx.measureText(txt).width+12,y=c.y+70;ctx.fillStyle='#c99a00';ctx.fillRect(c.x-w/2,y-fs*.8,w,fs*1.6);ctx.fillStyle='#111';ctx.fillText(txt,c.x,y)}
+  for(const s of g.sites){const txt=s.name.toUpperCase(),w=ctx.measureText(txt).width+12,y=s.y+B/2+40;ctx.fillStyle=s.breached?'#111':s.type==='inst'?'#2b4fd6':'#5a6fa0';ctx.fillRect(s.x-w/2,y-fs*.8,w,fs*1.6);ctx.fillStyle=s.breached?'#ff5a55':'#fff';ctx.fillText(txt,s.x,y);
+    if(z>.4&&g.phase==='action'){const s2=s.breached?(s.type==='inst'?'INTRUSION':'PILLÉ'):`${s.pc} police · ${s.hc} violents`;ctx.font=`500 ${fs*.85}px Inter,Arial`;const w2=ctx.measureText(s2).width+10;ctx.fillStyle='rgba(10,12,22,.85)';ctx.fillRect(s.x-w2/2,y+fs*.85,w2,fs*1.3);ctx.fillStyle='#ccd';ctx.fillText(s2,s.x,y+fs*1.5);ctx.font=`700 ${fs}px Inter,Arial,sans-serif`}}
+  // plan
+  if(g.phase==='prep'){for(const m of g.plan){const col=unitColor(m.k);ctx.fillStyle='rgba(255,255,255,.12)';ctx.beginPath();ctx.arc(m.x,m.y,20,0,7);ctx.fill();ctx.strokeStyle=m===g.selMarker?'#ffd23f':'#fff';ctx.lineWidth=m===g.selMarker?3:1.5;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle=col;ctx.beginPath();ctx.arc(m.x,m.y,8,0,7);ctx.fill();const u=UT[m.k];if(u&&u.stripe){ctx.strokeStyle=u.stripe;ctx.lineWidth=2;ctx.stroke()}
+      const txt=(u?u.name:VT[m.k].name.split(' ')[0])+' · '+m.mission;ctx.font=`700 ${fs*.8}px Inter,Arial`;const w=ctx.measureText(txt).width+8;ctx.fillStyle='rgba(43,79,214,.9)';ctx.fillRect(m.x-w/2,m.y-30-fs*.55,w,fs*1.1);ctx.fillStyle='#fff';ctx.fillText(txt,m.x,m.y-30)}}
+  if(z>.45)for(const s of g.squads){const enemy=s.side===CRO;if(enemy&&!(s.role==='casseur'&&!s.follow)&&s.role!=='opportuniste')continue;if(enemy&&z<.6)continue;if(s.isVeh&&s.transport&&!s.cargo&&!selSet.has(s))continue;
+    const txt=enemy?s.name+' · '+s.members.length:s.isVeh?s.name+(s.cargo?' · '+s.cargo.n+' '+UT[s.cargo.ut].name:'')+(s.closuresQ&&s.closuresQ.length?' · bouclages '+s.closuresQ.length:''):s.name+' · '+s.members.length;
+    ctx.font=`700 ${fs*.85}px Inter,Arial`;const w=ctx.measureText(txt).width+10,y=s.ay-26;ctx.fillStyle=enemy?(s.role==='opportuniste'?'rgba(200,60,20,.92)':'rgba(20,20,24,.92)'):'rgba(43,79,214,.92)';ctx.fillRect(s.ax-w/2,y-fs*.6,w,fs*1.2);ctx.fillStyle='#fff';ctx.fillText(txt,s.ax,y)}
   if(g.targeting){const w=toWorld(mouse.x,mouse.y);const rad={gas:80,stun:60,smoke:75,lbd:10}[g.targeting];ctx.strokeStyle=g.targeting==='lbd'?'#ff5a55':'rgba(230,235,220,.95)';ctx.setLineDash([4,4]);ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(w.x,w.y,rad,0,7);ctx.stroke();ctx.setLineDash([]);
     const rng2={gas:null,stun:180,smoke:300,lbd:170}[g.targeting];for(const s of g.sel){if(s.isVeh)continue;const r=rng2||gasRange(s);ctx.strokeStyle='rgba(140,170,255,.3)';ctx.beginPath();ctx.arc(s.ax,s.ay,r,0,7);ctx.stroke()}}
-  if(g.placing){const w=toWorld(mouse.x,mouse.y);const ok=!isSolid(w.x,w.y);ctx.strokeStyle=ok?'#ffd23f':'#ff5a55';ctx.lineWidth=2;ctx.setLineDash([5,4]);ctx.beginPath();ctx.arc(w.x,w.y,24,0,7);ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle='#ffd23f';ctx.font=`800 ${fs}px Inter,Arial`;ctx.fillText((UT[g.placing]?UT[g.placing].full:VT[g.placing].name).toUpperCase(),w.x,w.y-34)}
+  if(g.placing){const w=toWorld(mouse.x,mouse.y);ctx.strokeStyle='#ffd23f';ctx.lineWidth=2;ctx.setLineDash([5,4]);ctx.beginPath();ctx.arc(w.x,w.y,20,0,7);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#ffd23f';ctx.font=`800 ${fs}px Inter,Arial`;ctx.fillText((UT[g.placing]?UT[g.placing].full:VT[g.placing].name).toUpperCase()+' · '+missionAt(g.placing,w.x,w.y),w.x,w.y-32)}
   ctx.setTransform(dpr,0,0,dpr,0,0);
   if(drag){ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.fillStyle='rgba(255,255,255,.08)';const x=Math.min(drag.x0,drag.x1),y=Math.min(drag.y0,drag.y1),w=Math.abs(drag.x1-drag.x0),hh=Math.abs(drag.y1-drag.y0);ctx.fillRect(x,y,w,hh);ctx.strokeRect(x,y,w,hh)}
 }
 function renderMini(){const g=game;mx.drawImage(cityMini,0,0);if(g.dark>0){mx.fillStyle=`rgba(6,10,38,${.6*g.dark})`;mx.fillRect(0,0,MMW,MMH)}const sx=MMW/W,sy=MMH/H;
-  if(g.sc.march){mx.strokeStyle='rgba(255,210,63,.8)';mx.lineWidth=2;mx.beginPath();mx.moveTo(ROUTE[0].x*sx,ROUTE[0].y*sy);for(const p of ROUTE)mx.lineTo(p.x*sx,p.y*sy);mx.stroke()}
-  for(const l of g.landmarks){if(l.route)continue;mx.strokeStyle=l.owner==='crowd'?'#ff4a45':'#5a86ff';mx.lineWidth=1.5;mx.beginPath();mx.arc(l.x*sx,l.y*sy,LR*sx,0,7);mx.stroke()}
-  for(const a of g.agents){if(a.dead)continue;mx.fillStyle=a.side===POL?'#7da0ff':a.squad.role==='casseur'?'#111':'#ff5a50';mx.fillRect(a.x*sx-.7,a.y*sy-.7,1.6,1.6)}
+  mx.strokeStyle='rgba(255,210,63,.8)';mx.lineWidth=2;mx.beginPath();mx.moveTo(ROUTE[0].x*sx,ROUTE[0].y*sy);for(const p of ROUTE)mx.lineTo(p.x*sx,p.y*sy);mx.stroke();
+  for(const s of g.sites){mx.strokeStyle=s.breached?'#ff3030':s.breach>0?'#ff9a3a':'#7da0ff';mx.lineWidth=1.5;mx.strokeRect((s.x-B/2)*sx,(s.y-B/2)*sy,B*sx,B*sy)}
+  for(const a of g.agents){if(a.dead)continue;mx.fillStyle=a.side===POL?'#7da0ff':isHostile(a)?'#111':'#ff5a50';mx.fillRect(a.x*sx-.7,a.y*sy-.7,1.6,1.6)}
   for(const v of g.squads)if(v.isVeh){mx.fillStyle='#fff';mx.fillRect(v.ax*sx-2,v.ay*sy-2,4,4)}
+  if(g.phase==='prep')for(const m of g.plan){mx.fillStyle='#ffd23f';mx.fillRect(m.x*sx-2,m.y*sy-2,4,4)}
   for(const f of g.fires){mx.fillStyle='#ff9a2a';mx.beginPath();mx.arc(f.x*sx,f.y*sy,3,0,7);mx.fill()}
   for(const w of g.wounded){mx.fillStyle='#fff';mx.fillRect(w.x*sx-1.5,w.y*sy-1.5,3,3)}
   mx.strokeStyle='#fff';mx.lineWidth=1;mx.strokeRect(cam.x*sx,cam.y*sy,vw/cam.z*sx,vh/cam.z*sy)}
-function phaseText(h){if(game.phase==='setup')return'PRÉPARATION · l\'horloge est arrêtée';if(h>=6&&h<8)return'AUBE · peu de monde, relève à 06:00';if(h>=8&&h<12)return'MATINÉE · les cortèges se forment';if(h>=12&&h<17.5)return'JOURNÉE · foule nombreuse, témoins partout : la violence coûte cher';
-  if(h>=17.5&&h<20.5)return'SOIRÉE · sortie des bureaux, la lumière baisse';if(h>=20.5||h<2)return'NUIT · plus de casseurs, interpellations difficiles';return'FIN DE NUIT · les rues se vident'}
+function phaseText(h){const g=game;if(g.phase==='prep')return'PRÉPARATION · l\'horloge est arrêtée';if(g.phase==='setup')return'MISE EN PLACE · départ du cortège à 14:00 ('+Math.max(0,Math.ceil((g.actionAt-g.t)))+' min)';
+  if(h>=12&&h<17.5)return'JOURNÉE · beaucoup de passants : chaque geste violent pèse lourd';if(h>=17.5&&h<20.5)return'SOIRÉE · sortie des bureaux, la lumière baisse';if(h>=20.5||h<2)return'NUIT · plus de casseurs, interpellations difficiles';return'FIN DE NUIT · les rues se vident'}
 function updateHUD(){const g=game;const h=hourAt(g.t);
-  $('clock').textContent=clock(g.t);$('sky').textContent=g.dark>.5?'☾':'☀';$('spd').textContent=g.phase==='setup'?'PRÉPA':g.paused?'PAUSE':'×'+g.speed;$('pauseTag').classList.toggle('hide',!g.paused);
+  $('clock').textContent=clock(g.t);$('sky').textContent=g.dark>.5?'☾':'☀';$('spd').textContent=g.phase==='prep'?'ARRÊT':g.paused?'PAUSE':'×'+g.speed;$('pauseTag').classList.toggle('hide',!g.paused);
   $('phase').textContent=phaseText(h);
+  for(const[ph,id]of[['prep','ph-prep'],['setup','ph-setup'],['action','ph-action']]){const order_=['prep','setup','action'];$(id).className=g.phase===ph?'on':order_.indexOf(g.phase)>order_.indexOf(ph)?'done':''}
   const op=Math.round(g.op);$('pCro').textContent=op;$('pPol').textContent=100-op;$('fill').style.width=op+'%';
-  const L=g.landmarks.filter(l=>!l.route);const lc=L.filter(l=>l.owner==='crowd').length;$('lmC').textContent=lc;
-  $('lmBoxes').innerHTML=L.map(l=>`<span title="${l.name}" class="${l.owner==='crowd'?'c':''}${l.ctrl>-100&&l.ctrl<100?' x':''}">${l.short}</span>`).join('');
+  $('siteBoxes').innerHTML=g.sites.map((s,i)=>`<span data-i="${i}" title="${s.name}" class="${s.type==='mag'?'mag':''} ${s.breached?'lost':s.breach>0?'warn':''}">${s.short}</span>`).join('');
   $('dmgV').textContent=fmtEUR(g.damage);$('dmgBar').style.width=Math.min(100,g.damage/g.df.dmg*100)+'%';
-  let nc=0,np=0;for(const a of g.agents)if(!a.dead)a.side===CRO?nc++:np++;
-  $('sCro').textContent=nc;$('sPol').textContent=np;$('sRes').textContent=g.phase==='setup'?g.setupPts:g.reserve;$('sArr').textContent=g.stats.arrests;$('sWnd').textContent=g.wounded.length;$('sFire').textContent=g.fires.length;
-  $('panel').className=g.phase==='setup'?'setup':g.player==='crowd'?'crowd':'';
-  const mySide=g.player==='police'?POL:CRO;const sel=g.sel.filter(s=>s.side===mySide);
-  const sig=g.phase+'|'+sel.map(s=>s.id).join(',');if(sig!==selSig){selSig=sig;buildActions()}
-  if(g.phase==='setup'){
-    $('selTitle').textContent='PRÉPARATION · '+g.setupPts+' PTS';
-    $('selSub').textContent=g.placing?'CLIC GAUCHE sur la carte pour placer : '+(UT[g.placing]?UT[g.placing].full+' ('+UT[g.placing].n+' agents)':VT[g.placing].name)+' · Maj pour en placer plusieurs · clic droit pour annuler'
-      :sel.length?sel.map(s=>s.name).join(', ')+' · clic droit pour déplacer, Suppr pour retirer (remboursé)':"Le cortège partira de République vers Bastille puis place d'Italie (en jaune). Choisissez une unité en bas, puis cliquez sur la carte. Les points non dépensés passent pour moitié en réserve."}
-  else if(!sel.length){$('selTitle').textContent="PERSONNE N'EST SÉLECTIONNÉ";$('selSub').textContent='Glisser pour sélectionner · clic sur une personne pour tout son groupe · clic droit pour envoyer'}
-  else{const s0=sel[0];$('selTitle').textContent=sel.length===1?s0.name:sel.length+' GROUPES';let sub='';
-    if(g.player==='crowd'){sub=sel.reduce((s,q)=>s+q.members.length,0)+' personnes · '+(s0.sitin?'sit-in':s0.task?(s0.task.kind==='loot'?'pillage en cours':'incendie en cours'):s0.role==='cortege'&&s0.follow?'défile sur le parcours':s0.stance==='offensif'?'offensif : jets de projectiles':'paisible');
-      if(s0.role==='casseur')sub+=' · groupe autonome (P piller, I incendier)'}
-    else if(s0.isVeh){const V=VT[s0.vt];sub=V.name+(V.air?'':' · '+Math.round(s0.hp)+'/'+s0.maxhp+' PV');if(V.cap)sub+=s0.cargo?' · à bord : '+s0.cargo.n+' '+UT[s0.cargo.ut].full+' (U pour débarquer)':' · vide (capacité '+V.cap+')';
-      if(s0.vt==='eau')sub+=' · jet '+(s0.water?'actif (foule, barricades, feux)':'coupé');if(s0.vt==='vbrg')sub+=' · lame : dégage les barricades';if(s0.vt==='helico')sub+=' · projecteur : moins de jets, plus d\'interpellations';if(s0.vt==='fourgonCRS')sub+=s0.barrierCD>0?' · barrière dans '+Math.ceil(s0.barrierCD)+' s':' · barrière prête (N)'}
-    else{const u=UT[s0.ut];sub=u.full+' · '+s0.members.length+' agents · bouclier '+(u.shield==='grand'?'lourd':u.shield==='carre'?'carré':'aucun')+' · '+u.weap.map(w=>WNAME[w]).join(', ');
+  let nc=0,nh=0,np=0;for(const a of g.agents)if(!a.dead){if(a.side===CRO){nc++;if(isHostile(a))nh++}else np++}
+  $('sCro').textContent=nc;$('sHos').textContent=nh;$('sPol').textContent=np;$('sArr').textContent=g.stats.arrests;$('sWnd').textContent=g.wounded.length;$('sCiv').textContent=g.stats.civInj;
+  $('panel').className=g.phase==='prep'?'prep':g.phase==='setup'?'setup':'';
+  const sel=g.sel.filter(s=>s.side===POL);
+  const sig=g.phase+'|'+sel.map(s=>s.id).join(',');if(sig!==selSig){selSig=sig;buildActions();buildDeploy()}
+  if(g.phase==='prep'){const I=g.intel;const on=g.closures.filter(c=>c.on).length;const bouclers=g.plan.filter(m=>UT[m.k]&&UT[m.k].bouclage).length;
+    $('selTitle').textContent='PRÉPARATION · PLAN DE MAINTIEN DE L\'ORDRE';
+    $('selSub').innerHTML=g.placing?'<b>Clic gauche</b> sur la carte pour positionner : '+(UT[g.placing]?UT[g.placing].full+' ('+UT[g.placing].n+')':VT[g.placing].name)+'. La mission dépend de l\'endroit. Maj pour en poser plusieurs, clic droit pour annuler.'
+      :g.selMarker?'<b>'+(UT[g.selMarker.k]?UT[g.selMarker.k].full:VT[g.selMarker.k].name)+'</b> · '+MISSION_LABEL[g.selMarker.mission]+' · clic droit pour déplacer, Suppr pour retirer.'
+      :`<b>Renseignement :</b> ${fmtPeople(I.min)} à ${fmtPeople(I.max)} manifestants attendus, dont ${fmtPeople(I.rmin)} à ${fmtPeople(I.rmax)} individus à risque (black bloc), probablement en tête de cortège. Départ 14:00 de République vers Bastille puis la place d'Italie.<br><b>Bouclages :</b> ${on}/${g.closures.length} rues à fermer (ronds jaunes, clic pour activer/désactiver), assurés par ${bouclers} équipage(s) de Police secours / police municipale.`}
+  else if(g.phase==='setup'&&!sel.length){const placed=g.squads.filter(s=>s.side===POL&&!s.isVeh&&s.post&&dist(s.ax,s.ay,s.post.x,s.post.y)<50).length+g.squads.filter(s=>s.isVeh&&['eau','vbrg','helico'].includes(s.vt)&&s.post&&dist(s.ax,s.ay,s.post.x,s.post.y)<50).length;
+    const inst=g.closures.filter(c=>c.installed).length,on=g.closures.filter(c=>c.on).length;
+    $('selTitle').textContent='MISE EN PLACE · DÉPART À 14:00';$('selSub').innerHTML=`Unités en place : <b>${placed}/${g.plan.length}</b> · bouclages installés : <b>${inst}/${on}</b> · manifestants rassemblés : <b>${g.agents.filter(a=>!a.dead&&a.side===CRO).length}</b>.<br>Les unités roulent depuis leurs casernes et commissariats. Vous pouvez encore les rediriger (sélection + clic droit). Accélérez avec +.`}
+  else if(!sel.length){$('selTitle').textContent="AUCUNE UNITÉ SÉLECTIONNÉE";$('selSub').textContent='Glisser pour sélectionner · clic sur un agent pour toute son unité · clic droit pour envoyer · Tab pour passer d\'une unité à l\'autre'}
+  else{const s0=sel[0];$('selTitle').textContent=sel.length===1?s0.name:sel.length+' UNITÉS';let sub='';
+    if(s0.isVeh){const V=VT[s0.vt];sub=V.name+(V.air?'':' · '+Math.round(s0.hp)+'/'+s0.maxhp+' PV');if(V.cap)sub+=s0.cargo?' · à bord : '+s0.cargo.n+' '+UT[s0.cargo.ut].full+' (U pour débarquer)':' · vide (capacité '+V.cap+')';
+      if(s0.closuresQ&&s0.closuresQ.length)sub+=' · bouclages restants : '+s0.closuresQ.length;
+      if(s0.vt==='eau')sub+=' · jet '+(s0.water?'actif':'coupé');if(s0.vt==='vbrg')sub+=' · lame : dégage les barricades';if(s0.vt==='helico')sub+=' · projecteur : moins de jets, plus d\'interpellations';if(s0.vt==='fourgonCRS')sub+=s0.barrierCD>0?' · barrière dans '+Math.ceil(s0.barrierCD)+' s':' · barrière prête (N)'}
+    else{const u=UT[s0.ut];sub=u.full+' · '+s0.members.length+' agents · '+(s0.mission?MISSION_LABEL[s0.mission]+' · ':'')+'bouclier '+(u.shield==='grand'?'lourd':u.shield==='carre'?'carré':'aucun')+' · '+u.weap.map(w=>WNAME[w]).join(', ');
+      if(u.bouclage)sub+=' · peu équipée pour le maintien de l\'ordre';
       const cds=[];if(s0.gasCD>0)cds.push('lacrymo '+Math.ceil(s0.gasCD)+' s');if(s0.lbdCD>0)cds.push('LBD '+Math.ceil(s0.lbdCD)+' s');if(s0.stunCD>0)cds.push('assour. '+Math.ceil(s0.stunCD)+' s');if(cds.length)sub+=' · recharge : '+cds.join(', ')}
-    if(g.targeting)sub='CLIC GAUCHE pour tirer ('+{gas:'lacrymogène',lbd:'LBD, portée 170',stun:'assourdissante, portée 180',smoke:'fumigène, portée 300'}[g.targeting]+') · Maj pour enchaîner · clic droit pour annuler';
+    if(g.targeting)sub='CLIC GAUCHE pour tirer ('+{gas:'lacrymogène',lbd:'LBD, portée 170 — attention aux passants',stun:'assourdissante, portée 180',smoke:'fumigène, portée 300'}[g.targeting]+') · Maj pour enchaîner · clic droit pour annuler';
     $('selSub').textContent=sub}
-  document.querySelectorAll('#actions button').forEach(b=>{const id=b.dataset.id;let on=false,off=false,txt=null;const s0=sel[0];
+  document.querySelectorAll('#actions button').forEach(b=>{const id=b.dataset.id;let on=false,off=false;
     if(['gas','lbd','stun','smoke'].includes(id)){on=g.targeting===id;const key={gas:'gasCD',lbd:'lbdCD',stun:'stunCD',smoke:'smokeCD'}[id];const a=PACTS.find(x=>x.id===id);off=!sel.some(s=>a.ok(s)&&s[key]<=0)||(id!=='smoke'&&id!=='lbd'&&g.gasAmmo<=0)}
     if(id==='charge'){off=!sel.some(s=>!s.isVeh&&s.chargeCD<=0);on=sel.some(s=>s.chargeT>0)}
     if(id==='unload')off=!sel.some(s=>s.cargo);
     if(id==='barrier')off=!sel.some(s=>s.vt==='fourgonCRS'&&s.barrierCD<=0);
-    if(id==='water'){on=sel.some(s=>s.vt==='eau'&&s.water)}
-    if(id==='stance'){on=!!s0&&s0.stance==='offensif';off=!s0;txt=s0&&s0.stance==='offensif'?'OFFENSIF':'PAISIBLE'}
-    if(id==='sitin'){on=!!s0&&s0.sitin;off=!s0}
-    if(id==='bar'){off=!s0||s0.barCD>0;txt=s0&&s0.barCD>0?'BARRICADE · '+Math.ceil(s0.barCD)+' s':'BARRICADE'}
-    if(id==='call'){off=!s0||s0.callCD>0||g.op<45;txt=s0&&s0.callCD>0?'APPELER DES AMIS · '+Math.ceil(s0.callCD)+' s':'APPELER DES AMIS'}
-    if(id==='loot'||id==='burn'){on=!!s0&&s0.task&&s0.task.kind===id;off=!s0}
-    if(id==='route'){on=!!s0&&s0.follow;off=!s0||!g.sc.march}
-    if(id==='hold'||id==='embark'||id==='detach'||id==='remove')off=!s0;
-    b.classList.toggle('on',on);b.classList.toggle('off',off);if(txt)b.querySelector('span').textContent=txt});
-  if(g.player==='police'){const rl=$('resLab');const pts=g.phase==='setup'?g.setupPts:g.reserve;
-    if(rl)rl.textContent=g.phase==='setup'?'PLACER UNE UNITÉ · budget '+g.setupPts+' pts':'RÉSERVE · '+g.reserve+' pts — les renforts partent de la préfecture (ouest) en fourgon';
-    document.querySelectorAll('#deploy button').forEach(b=>{const k=b.dataset.k;b.classList.toggle('on',g.placing===k);b.classList.toggle('off',pts<deployCost(k)||(g.phase!=='setup'&&g.deployCD>0)||(k==='helico'&&g.squads.some(s=>s.vt==='helico')))})}
-  if(newsDirty){newsDirty=false;$('news').innerHTML=g.news.map((n,i)=>`<span class="n ${n.kind}" data-i="${i}"><b>${{p:'POLICE',w:'INFO',s:'SECOURS',c:'FOULE'}[n.kind]}</b><em>${n.time}</em>${n.text}</span>`).join('<span style="opacity:.4">■</span>')}
+    if(id==='water')on=sel.some(s=>s.vt==='eau'&&s.water);
+    if(id==='remove')off=!g.selMarker;
+    if(id==='hold'||id==='embark')off=!sel.length;
+    b.classList.toggle('on',on);b.classList.toggle('off',off)});
+  if(g.phase==='prep')document.querySelectorAll('#deploy button').forEach(b=>{const k=b.dataset.k;b.querySelector('.cnt').textContent=g.roster[k]+'/'+g.df.roster[k];b.classList.toggle('on',g.placing===k);b.classList.toggle('off',!(g.roster[k]>0))});
+  else{const rl=$('resLab');if(rl)rl.textContent='RENFORTS · '+g.reinfLeft+' compagnie(s) disponible(s) à la préfecture, délai 30 min'+(g.phase!=='action'?' (pendant l\'action)':'');const rb=$('reinfBtn');if(rb)rb.classList.toggle('off',g.reinfLeft<=0||g.phase!=='action')}
+  if(newsDirty){newsDirty=false;$('news').innerHTML=g.news.map((n,i)=>`<span class="n ${n.kind}" data-i="${i}"><b>${{p:'POLICE',w:'INFO',s:'SECOURS',c:'MANIF',v:'PASSANTS'}[n.kind]}</b><em>${n.time}</em>${n.text}</span>`).join('<span style="opacity:.4">■</span>')}
 }
 }
 </script>
